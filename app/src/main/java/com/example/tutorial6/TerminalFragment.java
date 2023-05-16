@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
@@ -59,7 +60,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     private String newline = TextUtil.newline_crlf;
 
     LineChart mpLineChart;
-    LineDataSet lineDataSet1;
+    LineDataSet lineDataSet1, lineDataSet2, lineDataSet3;
     ArrayList<ILineDataSet> dataSets = new ArrayList<>();
     LineData data;
 
@@ -157,10 +158,19 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         sendBtn.setOnClickListener(v -> send(sendText.getText().toString()));
 
         mpLineChart = (LineChart) view.findViewById(R.id.line_chart);
-        lineDataSet1 =  new LineDataSet(emptyDataValues(), "temperature");
+        lineDataSet1 =  new LineDataSet(emptyDataValues(), "X Acceleration");
+        lineDataSet1.setColor(Color.RED);
+        lineDataSet2 =  new LineDataSet(emptyDataValues(), "Y Acceleration");
+        lineDataSet1.setColor(Color.BLUE);
+        lineDataSet3 =  new LineDataSet(emptyDataValues(), "Z Acceleration");
+        lineDataSet1.setColor(Color.GREEN);
+
 
         dataSets.add(lineDataSet1);
+        dataSets.add(lineDataSet2);
+        dataSets.add(lineDataSet3);
         data = new LineData(dataSets);
+        mpLineChart.getDescription().setEnabled(false);
         mpLineChart.setData(data);
         mpLineChart.invalidate();
 
@@ -304,17 +314,23 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
                     // create new csv unless file already exists
                     File file = new File("/sdcard/csv_dir/");
                     file.mkdirs();
-                    String csv = "/sdcard/csv_dir/data.csv";
+                    String csv = "/sdcard/csv_dir/hike_data.csv";
                     CSVWriter csvWriter = new CSVWriter(new FileWriter(csv,true));
 
                     // parse string values, in this case [0] is tmp & [1] is count (t)
-                    String row[]= new String[]{parts[0],parts[1]};
+                    // now [0] is count, [1] is x a, [2] is y a, [3] is z
+                    String row[]= new String[]{parts[0],parts[1], parts[2], parts[3]};
                     csvWriter.writeNext(row);
                     csvWriter.close();
 
                     // add received values to line dataset for plotting the linechart
-                    data.addEntry(new Entry(Integer.valueOf(parts[1]),Float.parseFloat(parts[0])),0);
+                    data.addEntry(new Entry(Integer.valueOf(parts[0]),Float.parseFloat(parts[1])),0);
+                    data.addEntry(new Entry(Integer.valueOf(parts[0]),Float.parseFloat(parts[2])),1);
+                    data.addEntry(new Entry(Integer.valueOf(parts[0]),Float.parseFloat(parts[3])),2);
+
                     lineDataSet1.notifyDataSetChanged(); // let the data know a dataSet changed
+                    lineDataSet2.notifyDataSetChanged(); // let the data know a dataSet changed
+                    lineDataSet3.notifyDataSetChanged(); // let the data know a dataSet changed
                     mpLineChart.notifyDataSetChanged(); // let the chart know it's data changed
                     mpLineChart.invalidate(); // refresh
 
