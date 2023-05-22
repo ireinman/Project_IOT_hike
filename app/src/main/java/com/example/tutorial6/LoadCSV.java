@@ -33,7 +33,7 @@ public class LoadCSV extends AppCompatActivity {
 
         ArrayList<String[]> csvData = new ArrayList<>();
 
-        csvData= CsvRead("/sdcard/csv_dir/hike_data.csv");
+        csvData = CsvRead("/sdcard/csv_dir/hike_data.csv");
 
         LineDataSet lineDataSet1 =  new LineDataSet(DataValues(csvData, 1),"X Acceleration");
         LineDataSet lineDataSet2 =  new LineDataSet(DataValues(csvData, 2),"Y Acceleration");
@@ -71,12 +71,10 @@ public class LoadCSV extends AppCompatActivity {
         try {
             File file = new File(path);
             CSVReader reader = new CSVReader(new FileReader(file));
-            String[]nextline;
-            while((nextline = reader.readNext())!= null){
-                if(nextline != null){
-                    CsvData.add(nextline);
-
-                }
+            String[] newline = reader.readNext();
+            while(newline != null){
+                CsvData.add(newline);
+                newline = reader.readNext();
             }
 
         }catch (Exception e){}
@@ -87,7 +85,7 @@ public class LoadCSV extends AppCompatActivity {
         ArrayList<Entry> dataVals = new ArrayList<Entry>();
         for (int i = 0; i < csvData.size(); i++){
 
-            dataVals.add(new Entry(Integer.parseInt(csvData.get(i)[0]),
+            dataVals.add(new Entry(Float.parseFloat(csvData.get(i)[0]),
                     Float.parseFloat(csvData.get(i)[index])));
 
 

@@ -161,9 +161,9 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         lineDataSet1 =  new LineDataSet(emptyDataValues(), "X Acceleration");
         lineDataSet1.setColor(Color.RED);
         lineDataSet2 =  new LineDataSet(emptyDataValues(), "Y Acceleration");
-        lineDataSet1.setColor(Color.BLUE);
+        lineDataSet2.setColor(Color.BLUE);
         lineDataSet3 =  new LineDataSet(emptyDataValues(), "Z Acceleration");
-        lineDataSet1.setColor(Color.GREEN);
+        lineDataSet3.setColor(Color.GREEN);
 
 
         dataSets.add(lineDataSet1);
@@ -319,14 +319,15 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
 
                     // parse string values, in this case [0] is tmp & [1] is count (t)
                     // now [0] is count, [1] is x a, [2] is y a, [3] is z
-                    String row[]= new String[]{parts[0],parts[1], parts[2], parts[3]};
+                    String row[]= new String[]{parts[0], parts[1], parts[2], parts[3]};
+                    // String row = parts[0] + ","  + parts[1] + "," + parts[2] + "," + parts[3];
                     csvWriter.writeNext(row);
                     csvWriter.close();
 
-                    // add received values to line dataset for plotting the linechart
-                    data.addEntry(new Entry(Integer.valueOf(parts[0]),Float.parseFloat(parts[1])),0);
-                    data.addEntry(new Entry(Integer.valueOf(parts[0]),Float.parseFloat(parts[2])),1);
-                    data.addEntry(new Entry(Integer.valueOf(parts[0]),Float.parseFloat(parts[3])),2);
+                    // add received values to line dataset for plotting the line-chart
+                    data.addEntry(new Entry(Float.parseFloat(parts[0]),Float.parseFloat(parts[1])),0);
+                    data.addEntry(new Entry(Float.parseFloat(parts[0]),Float.parseFloat(parts[2])),1);
+                    data.addEntry(new Entry(Float.parseFloat(parts[0]),Float.parseFloat(parts[3])),2);
 
                     lineDataSet1.notifyDataSetChanged(); // let the data know a dataSet changed
                     lineDataSet2.notifyDataSetChanged(); // let the data know a dataSet changed
