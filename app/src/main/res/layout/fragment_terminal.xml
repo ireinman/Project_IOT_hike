@@ -10,7 +10,7 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/line_chart"
         android:layout_width="match_parent"
-        android:layout_height="280dp"
+        android:layout_height="240dp"
         android:background="@color/white" />
 
     <LinearLayout
@@ -22,9 +22,9 @@
 
         <Button
             android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="120dp"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="80dp"
             android:text="open CSV" />
 
     </LinearLayout>
@@ -38,14 +38,14 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_height="49dp"
+            android:layout_height="30dp"
             android:layout_weight="1"
             android:textAlignment="center"
             android:textSize="20sp"
             android:text="@string/enter_steps" />
         <TextView
             android:layout_width="0dp"
-            android:layout_height="49dp"
+            android:layout_height="30dp"
             android:layout_weight="1"
             android:textAlignment="center"
             android:textSize="20sp"
@@ -63,7 +63,7 @@
         <EditText
             android:id="@+id/editTextNumber2"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:ems="10"
             android:inputType="number"
             android:layout_weight="1"
@@ -73,7 +73,7 @@
         <EditText
             android:id="@+id/editTextTextPersonName"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:ems="10"
             android:inputType="textPersonName"
             android:layout_weight="1"

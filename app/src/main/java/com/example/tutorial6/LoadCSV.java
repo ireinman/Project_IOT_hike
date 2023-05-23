@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -49,6 +51,18 @@ public class LoadCSV extends AppCompatActivity {
         LineData data = new LineData(dataSets);
         lineChart.setData(data);
         lineChart.invalidate();
+
+        File folder = new File("/sdcard/csv_dir/");
+        File[] listOfFiles = folder.listFiles();
+        String[] files_names = new String[listOfFiles.length];
+        for (int i=0;i<listOfFiles.length;i++){
+            files_names[i] = listOfFiles[i].getName();
+        }
+        Spinner mySpinner = (Spinner) findViewById(R.id.spinner);
+
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this,R.layout.spinner_item,files_names);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mySpinner.setAdapter(adapter);
 
 
 
