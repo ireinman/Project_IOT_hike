@@ -58,7 +58,7 @@ public class LoadCSV extends AppCompatActivity {
         for (int i=0;i<listOfFiles.length;i++){
             files_names[i] = listOfFiles[i].getName();
         }
-        Spinner mySpinner = (Spinner) findViewById(R.id.spinner);
+        Spinner mySpinner = (Spinner) findViewById(R.id.spinner2);
 
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this,R.layout.spinner_item,files_names);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

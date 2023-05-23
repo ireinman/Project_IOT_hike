@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TerminalFragment extends Fragment implements ServiceConnection, SerialListener {
 
@@ -65,6 +67,9 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     LineDataSet lineDataSet1, lineDataSet2, lineDataSet3;
     ArrayList<ILineDataSet> dataSets = new ArrayList<>();
     LineData data;
+    EditText steps;
+    EditText fileName;
+    boolean workout = false;
 
 
     /*
@@ -150,23 +155,26 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         receiveText.setTextColor(getResources().getColor(R.color.colorRecieveText)); // set as default color to reduce number of spans
         receiveText.setMovementMethod(ScrollingMovementMethod.getInstance());
 
-        sendText = view.findViewById(R.id.send_text);
-        hexWatcher = new TextUtil.HexWatcher(sendText);
-        hexWatcher.enable(hexEnabled);
-        sendText.addTextChangedListener(hexWatcher);
-        sendText.setHint(hexEnabled ? "HEX mode" : "");
+//        sendText = view.findViewById(R.id.send_text);
+//        hexWatcher = new TextUtil.HexWatcher(sendText);
+//        hexWatcher.enable(hexEnabled);
+//        sendText.addTextChangedListener(hexWatcher);
+//        sendText.setHint(hexEnabled ? "HEX mode" : "");
 
 
-        View sendBtn = view.findViewById(R.id.send_btn);
-        sendBtn.setOnClickListener(v -> send(sendText.getText().toString()));
+//        View sendBtn = view.findViewById(R.id.send_btn);
+//        sendBtn.setOnClickListener(v -> send(sendText.getText().toString()));
 
         mpLineChart = (LineChart) view.findViewById(R.id.line_chart);
         lineDataSet1 =  new LineDataSet(emptyDataValues(), "X Acceleration");
         lineDataSet1.setColor(Color.RED);
+        lineDataSet1.setCircleColor(Color.RED);
         lineDataSet2 =  new LineDataSet(emptyDataValues(), "Y Acceleration");
         lineDataSet2.setColor(Color.BLUE);
+        lineDataSet2.setCircleColor(Color.BLUE);
         lineDataSet3 =  new LineDataSet(emptyDataValues(), "Z Acceleration");
         lineDataSet3.setColor(Color.GREEN);
+        lineDataSet3.setCircleColor(Color.GREEN);
 
 
         dataSets.add(lineDataSet1);
@@ -177,7 +185,15 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         mpLineChart.setData(data);
         mpLineChart.invalidate();
 
-        Button buttonCsvShow = (Button) view.findViewById(R.id.button2);
+        Button buttonCsvShow = (Button) view.findViewById(R.id.openCsv);
+        Button buttonStart = (Button) view.findViewById(R.id.btnStart);
+        Button buttonStop = (Button) view.findViewById(R.id.btnStop);
+        Button buttonReset = (Button) view.findViewById(R.id.btnReset);
+        Button buttonSave = (Button) view.findViewById(R.id.btnSave);
+
+        steps = (EditText) view.findViewById(R.id.editSteps);
+        fileName = (EditText) view.findViewById(R.id.editFileName);
+
 
         // for some reason the spinner crashes it all
         Spinner mySpinner = (Spinner) view.findViewById(R.id.spinner);
@@ -198,6 +214,36 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
 //
 //            }
 //        });
+
+        buttonStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                workout = true;
+
+            }
+        });
+
+        buttonStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                workout = false;
+
+            }
+        });
+
+        buttonReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reset();
+            }
+        });
+
+        buttonSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveData();
+            }
+        });
 
         buttonCsvShow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -307,60 +353,45 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
             receiveText.append(TextUtil.toHexString(message) + '\n');
         } else {
             String msg = new String(message);
-            if(newline.equals(TextUtil.newline_crlf) && msg.length() > 0) {
+            if (newline.equals(TextUtil.newline_crlf) && msg.length() > 0) {
                 // don't show CR as ^M if directly before LF
                 String msg_to_save = msg;
                 msg_to_save = msg.replace(TextUtil.newline_crlf, TextUtil.emptyString);
                 // check message length
-                if (msg_to_save.length() > 1){
-                // split message string by ',' char
-                String[] parts = msg_to_save.split(",");
-                // function to trim blank spaces
-                parts = clean_str(parts);
+                if (msg_to_save.length() > 1) {
+                    // split message string by ',' char
+                    String[] parts = msg_to_save.split(",");
+                    // function to trim blank spaces
+                    parts = clean_str(parts);
 
-                // saving data to csv
-                try {
+                    if (workout) {
 
-                    // create new csv unless file already exists
-                    File file = new File("/sdcard/csv_dir/");
-                    file.mkdirs();
-                    String csv = "/sdcard/csv_dir/hike_data.csv";
-                    CSVWriter csvWriter = new CSVWriter(new FileWriter(csv,true));
+                        // add received values to line dataset for plotting the line-chart
+                        data.addEntry(new Entry(Float.parseFloat(parts[0]), Float.parseFloat(parts[1])), 0);
+                        data.addEntry(new Entry(Float.parseFloat(parts[0]), Float.parseFloat(parts[2])), 1);
+                        data.addEntry(new Entry(Float.parseFloat(parts[0]), Float.parseFloat(parts[3])), 2);
 
-                    // parse string values, in this case [0] is tmp & [1] is count (t)
-                    // now [0] is t, [1] is x a, [2] is y a, [3] is z
-                    String[] row = new String[]{parts[0], parts[1], parts[2], parts[3]};
-                    // String row = parts[0] + ","  + parts[1] + "," + parts[2] + "," + parts[3];
-                    csvWriter.writeNext(row);
-                    csvWriter.close();
-
-                    // add received values to line dataset for plotting the line-chart
-                    data.addEntry(new Entry(Float.parseFloat(parts[0]),Float.parseFloat(parts[1])),0);
-                    data.addEntry(new Entry(Float.parseFloat(parts[0]),Float.parseFloat(parts[2])),1);
-                    data.addEntry(new Entry(Float.parseFloat(parts[0]),Float.parseFloat(parts[3])),2);
-
-                    lineDataSet1.notifyDataSetChanged(); // let the data know a dataSet changed
-                    lineDataSet2.notifyDataSetChanged(); // let the data know a dataSet changed
-                    lineDataSet3.notifyDataSetChanged(); // let the data know a dataSet changed
-                    mpLineChart.notifyDataSetChanged(); // let the chart know it's data changed
-                    mpLineChart.invalidate(); // refresh
+                        lineDataSet1.notifyDataSetChanged(); // let the data know a dataSet changed
+                        lineDataSet2.notifyDataSetChanged(); // let the data know a dataSet changed
+                        lineDataSet3.notifyDataSetChanged(); // let the data know a dataSet changed
+                        mpLineChart.notifyDataSetChanged(); // let the chart know it's data changed
+                        mpLineChart.invalidate(); // refresh
 
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }}
+                    }
 
-                msg = msg.replace(TextUtil.newline_crlf, TextUtil.newline_lf);
-                // send msg to function that saves it to csv
-                // special handling if CR and LF come in separate fragments
-                if (pendingNewline && msg.charAt(0) == '\n') {
-                    Editable edt = receiveText.getEditableText();
-                    if (edt != null && edt.length() > 1)
-                        edt.replace(edt.length() - 2, edt.length(), "");
+                    msg = msg.replace(TextUtil.newline_crlf, TextUtil.newline_lf);
+                    // send msg to function that saves it to csv
+                    // special handling if CR and LF come in separate fragments
+                    if (pendingNewline && msg.charAt(0) == '\n') {
+                        Editable edt = receiveText.getEditableText();
+                        if (edt != null && edt.length() > 1)
+                            edt.replace(edt.length() - 2, edt.length(), "");
+                    }
+                    pendingNewline = msg.charAt(msg.length() - 1) == '\r';
                 }
-                pendingNewline = msg.charAt(msg.length() - 1) == '\r';
+                receiveText.append(TextUtil.toCaretString(msg, newline.length() != 0));
             }
-            receiveText.append(TextUtil.toCaretString(msg, newline.length() != 0));
         }
     }
 
@@ -409,6 +440,61 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     private void OpenLoadCSV(){
         Intent intent = new Intent(getContext(),LoadCSV.class);
         startActivity(intent);
+    }
+
+    private void reset(){
+        workout = false;
+        while(lineDataSet1.removeLast()){}
+        while(lineDataSet2.removeLast()){}
+        while(lineDataSet3.removeLast()){}
+        lineDataSet1.notifyDataSetChanged(); // let the data know a dataSet changed
+        lineDataSet2.notifyDataSetChanged(); // let the data know a dataSet changed
+        lineDataSet3.notifyDataSetChanged(); // let the data know a dataSet changed
+        mpLineChart.notifyDataSetChanged(); // let the chart know it's data changed
+        mpLineChart.invalidate(); // refresh
+    }
+
+    private void saveData(){
+
+        // create new csv unless file already exists
+        String path = "/sdcard/csv_dir/";
+        File folder = new File(path);
+        folder.mkdirs();
+        File[] listOfFiles = folder.listFiles();
+        String currentName = fileName.getText().toString();
+        String fileRealName = "";
+        for(int i = 0; i < listOfFiles.length; i++){
+            fileRealName = listOfFiles[i].getName().substring(
+                    0, listOfFiles[i].getName().length() - 4);
+            if (currentName.equals(fileRealName)){
+                Toast.makeText(getContext(),"This file already exist",Toast.LENGTH_SHORT)
+                        .show();
+                return;
+            }
+        }
+        // saving data to csv
+        try {
+            String csv = path + currentName + ".csv";
+            CSVWriter csvWriter = new CSVWriter(new FileWriter(csv, true));
+            List<Entry> vals1 = lineDataSet1.getValues();
+            List<Entry> vals2 = lineDataSet2.getValues();
+            List<Entry> vals3 = lineDataSet3.getValues();
+
+            String[] row;
+            for(int i = 0; i < vals1.size(); i++) {
+
+                // now [0] is t, [1] is x a, [2] is y a, [3] is z
+                row = new String[]{String.valueOf(vals1.get(i).getX()), String.valueOf(vals1.get(i).getY()),
+                        String.valueOf(vals2.get(i).getY()), String.valueOf(vals3.get(i).getY())};
+                csvWriter.writeNext(row);
+            }
+            csvWriter.close();
+            Toast.makeText(getContext(),"This file saved!",Toast.LENGTH_SHORT)
+                    .show();
+            reset();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
