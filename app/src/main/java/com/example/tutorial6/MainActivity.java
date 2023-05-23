@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         setSupportActionBar(toolbar);
 
         // for some reason the spinner crashes it all
-        Spinner mySpinner = findViewById(R.id.spinner);
+        Spinner mySpinner = (Spinner) findViewById(R.id.spinner);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.modes,android.R.layout.simple_spinner_item);
