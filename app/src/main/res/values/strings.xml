@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">tutorial6</string>
     <string name="devices">Bluetooth Devices</string>
-    <string name="enter_steps">enter steps</string>
-    <string name="enter_csv_name">enter csv name</string>
+    <string name="enter_steps">Enter steps:</string>
+    <string name="enter_csv_name">Enter csv name:</string>
 
     <string-array name="modes">
         <item> Running </item>

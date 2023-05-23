@@ -77,7 +77,6 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         setRetainInstance(true);
         deviceAddress = getArguments().getString("device");
 
-
     }
 
     @Override
@@ -157,13 +156,6 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         sendText.addTextChangedListener(hexWatcher);
         sendText.setHint(hexEnabled ? "HEX mode" : "");
 
-        // for some reason the spinner crashes it all
-        Spinner mySpinner = (Spinner) view.findViewById(R.id.spinner);
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity().
-                getApplicationContext(), R.array.modes,android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mySpinner.setAdapter(adapter);
 
         View sendBtn = view.findViewById(R.id.send_btn);
         sendBtn.setOnClickListener(v -> send(sendText.getText().toString()));
@@ -185,20 +177,27 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         mpLineChart.setData(data);
         mpLineChart.invalidate();
 
-        Button buttonClear = (Button) view.findViewById(R.id.button1);
         Button buttonCsvShow = (Button) view.findViewById(R.id.button2);
 
+        // for some reason the spinner crashes it all
+        Spinner mySpinner = (Spinner) view.findViewById(R.id.spinner);
 
-        buttonClear.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Toast.makeText(getContext(),"Clear",Toast.LENGTH_SHORT).show();
-                LineData data = mpLineChart.getData();
-                ILineDataSet set = data.getDataSetByIndex(0);
-                data.getDataSetByIndex(0);
-                while(set.removeLast()){}
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity().getApplicationContext(),
+                R.array.modes,R.layout.spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mySpinner.setAdapter(adapter);
 
-            }
-        });
+
+//        buttonClear.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                Toast.makeText(getContext(),"Clear",Toast.LENGTH_SHORT).show();
+//                LineData data = mpLineChart.getData();
+//                ILineDataSet set = data.getDataSetByIndex(0);
+//                data.getDataSetByIndex(0);
+//                while(set.removeLast()){}
+//
+//            }
+//        });
 
         buttonCsvShow.setOnClickListener(new View.OnClickListener() {
             @Override

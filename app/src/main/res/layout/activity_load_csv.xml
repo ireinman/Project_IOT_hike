@@ -12,11 +12,37 @@
         android:layout_height="320dp"
         android:background="@color/white" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="20dp"
+        android:weightSum="6">
+
+        <EditText
+            android:id="@+id/editTextTextPersonName2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:layout_weight="5"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:text="Put CSV Name Here"/>
+
+        <Button
+            android:id="@+id/button8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Load CSV"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
     <Button
         android:id="@+id/button_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="back" />
-
-
 </LinearLayout>
