@@ -27,7 +27,7 @@
             android:layout_weight="5" />
 
         <Button
-            android:id="@+id/button8"
+            android:id="@+id/load_csv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Load CSV"
@@ -42,4 +42,32 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="back" />
+
+    <TextView
+        android:id="@+id/fileNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/experimentTimeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/activityTypeText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/countStepsText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="" />
 </LinearLayout>

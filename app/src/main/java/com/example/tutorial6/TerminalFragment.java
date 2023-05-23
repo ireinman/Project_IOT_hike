@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.icu.text.SimpleDateFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
@@ -31,6 +33,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -45,6 +48,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class TerminalFragment extends Fragment implements ServiceConnection, SerialListener {
 
@@ -70,6 +75,9 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     EditText steps;
     EditText fileName;
     boolean workout = false;
+    String time_str = "";
+    Spinner mySpinner;
+    float firstTime;
 
 
     /*
@@ -196,12 +204,14 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
 
 
         // for some reason the spinner crashes it all
-        Spinner mySpinner = (Spinner) view.findViewById(R.id.spinner);
+        mySpinner = (Spinner) view.findViewById(R.id.spinner);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity().getApplicationContext(),
                 R.array.modes,R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mySpinner.setAdapter(adapter);
+
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss aaa");
 
 
 //        buttonClear.setOnClickListener(new View.OnClickListener() {
@@ -216,10 +226,13 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
 //        });
 
         buttonStart.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
+                if (!workout)
+                    time_str = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").format(
+                            LocalDateTime.now());
                 workout = true;
-
             }
         });
 
@@ -365,11 +378,15 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
                     parts = clean_str(parts);
 
                     if (workout) {
-
+                        if (lineDataSet1.getValues().size() == 0)
+                            firstTime = Float.parseFloat(parts[0]);
                         // add received values to line dataset for plotting the line-chart
-                        data.addEntry(new Entry(Float.parseFloat(parts[0]), Float.parseFloat(parts[1])), 0);
-                        data.addEntry(new Entry(Float.parseFloat(parts[0]), Float.parseFloat(parts[2])), 1);
-                        data.addEntry(new Entry(Float.parseFloat(parts[0]), Float.parseFloat(parts[3])), 2);
+                        data.addEntry(new Entry(Float.parseFloat(parts[0]) - firstTime,
+                                Float.parseFloat(parts[1])), 0);
+                        data.addEntry(new Entry(Float.parseFloat(parts[0]) - firstTime,
+                                Float.parseFloat(parts[2])), 1);
+                        data.addEntry(new Entry(Float.parseFloat(parts[0]) - firstTime,
+                                Float.parseFloat(parts[3])), 2);
 
                         lineDataSet1.notifyDataSetChanged(); // let the data know a dataSet changed
                         lineDataSet2.notifyDataSetChanged(); // let the data know a dataSet changed
@@ -397,7 +414,8 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
 
     private void status(String str) {
         SpannableStringBuilder spn = new SpannableStringBuilder(str + '\n');
-        spn.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorStatusText)), 0, spn.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spn.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorStatusText)),
+                0, spn.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         receiveText.append(spn);
     }
 
@@ -472,20 +490,42 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
                 return;
             }
         }
+        if (lineDataSet1.getValues().size() == 0) {
+            Toast.makeText(getContext(), "There are no data", Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
         // saving data to csv
         try {
-            String csv = path + currentName + ".csv";
-            CSVWriter csvWriter = new CSVWriter(new FileWriter(csv, true));
+            String csvName = path + currentName + ".csv";
+            CSVWriter csvWriter = new CSVWriter(new FileWriter(csvName, true));
             List<Entry> vals1 = lineDataSet1.getValues();
             List<Entry> vals2 = lineDataSet2.getValues();
             List<Entry> vals3 = lineDataSet3.getValues();
 
-            String[] row;
+            String[] row = new String[]{"NAME:", currentName + ".csv"};
+            csvWriter.writeNext(row);
+
+            row = new String[]{"EXPERIMENT TIME:", time_str};
+            csvWriter.writeNext(row);
+
+            row = new String[]{"ACTIVITY TYPE:",mySpinner.getSelectedItem().toString()};
+            csvWriter.writeNext(row);
+
+            row = new String[]{"COUNT OF ACTUAL STEPS:",steps.getText().toString()};
+            csvWriter.writeNext(row);
+
+            row = new String[]{};
+            csvWriter.writeNext(row);
+
+            row = new String[]{"Time [sec]","ACC X","ACC Y","ACC Z"};
+            csvWriter.writeNext(row);
+
             for(int i = 0; i < vals1.size(); i++) {
 
                 // now [0] is t, [1] is x a, [2] is y a, [3] is z
-                row = new String[]{String.valueOf(vals1.get(i).getX()), String.valueOf(vals1.get(i).getY()),
-                        String.valueOf(vals2.get(i).getY()), String.valueOf(vals3.get(i).getY())};
+                row = new String[]{vals1.get(i).getX()+"", vals1.get(i).getY()+"",
+                        vals2.get(i).getY()+"", vals3.get(i).getY()+""};
                 csvWriter.writeNext(row);
             }
             csvWriter.close();

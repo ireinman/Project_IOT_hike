@@ -25,7 +25,7 @@
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_marginHorizontal="80dp"
-            android:text="open CSV" />
+            android:text="open load CSV" />
 
     </LinearLayout>
 
@@ -80,7 +80,7 @@
             android:inputType="textPersonName"
             android:layout_weight="1"
             android:textAlignment="center"
-            android:text="csv name"
+            android:text="csv_name"
             android:textSize="20sp" />
 
     </LinearLayout>
