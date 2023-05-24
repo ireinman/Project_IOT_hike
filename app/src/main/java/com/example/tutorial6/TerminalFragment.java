@@ -498,24 +498,26 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         // saving data to csv
         try {
             String csvName = path + currentName + ".csv";
-            CSVWriter csvWriter = new CSVWriter(new FileWriter(csvName, true));
+            CSVWriter csvWriter = new CSVWriter(new FileWriter(csvName, true), ',',
+                    CSVWriter.NO_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                    CSVWriter.DEFAULT_LINE_END);
             List<Entry> vals1 = lineDataSet1.getValues();
             List<Entry> vals2 = lineDataSet2.getValues();
             List<Entry> vals3 = lineDataSet3.getValues();
 
-            String[] row = new String[]{"NAME:", currentName + ".csv"};
+            String[] row = new String[]{"NAME:", currentName + ".csv", "", ""};
             csvWriter.writeNext(row);
 
-            row = new String[]{"EXPERIMENT TIME:", time_str};
+            row = new String[]{"EXPERIMENT TIME:", time_str, "", ""};
             csvWriter.writeNext(row);
 
-            row = new String[]{"ACTIVITY TYPE:",mySpinner.getSelectedItem().toString()};
+            row = new String[]{"ACTIVITY TYPE:",mySpinner.getSelectedItem().toString(), "", ""};
             csvWriter.writeNext(row);
 
-            row = new String[]{"COUNT OF ACTUAL STEPS:",steps.getText().toString()};
+            row = new String[]{"COUNT OF ACTUAL STEPS:",steps.getText().toString(), "", ""};
             csvWriter.writeNext(row);
 
-            row = new String[]{};
+            row = new String[]{"", "", "", ""};
             csvWriter.writeNext(row);
 
             row = new String[]{"Time [sec]","ACC X","ACC Y","ACC Z"};
