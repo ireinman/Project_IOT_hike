@@ -1,9 +1,6 @@
-package com.example.tutorial6;
-
-
+package com.example.tutorial7;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -23,14 +20,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-import java.util.List;
-
 
 public class LoadCSV extends AppCompatActivity {
 
     LineChart lineChart;
     Spinner mySpinner;
-    TextView activityText, timeText, nameText, stepsText;
+    TextView activityText, timeText, nameText, realStepsText, estimateStepsText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +36,11 @@ public class LoadCSV extends AppCompatActivity {
         lineChart = (LineChart) findViewById(R.id.line_chart);
         nameText = (TextView) findViewById(R.id.fileNameText);
         timeText = (TextView) findViewById(R.id.experimentTimeText);
-        activityText = (TextView) findViewById(R.id.activityTypeText);
-        stepsText = (TextView) findViewById(R.id.countStepsText);
+        activityText = (TextView) findViewById(R.id.activityText);
+        realStepsText = (TextView) findViewById(R.id.countStepsText);
+        estimateStepsText = (TextView) findViewById(R.id.estimateStepsText);
 
-        File folder = new File("/sdcard/csv_dir/");
+        File folder = new File("/sdcard/csv_dir_lab7/");
         File[] listOfFiles = folder.listFiles();
         String[] files_names = new String[listOfFiles.length];
         for (int i=0;i<listOfFiles.length;i++){
@@ -88,15 +84,23 @@ public class LoadCSV extends AppCompatActivity {
             String[] newline = reader.readNext();
             String text = "File Name: " + newline[1];
             nameText.setText(text);
+
             newline = reader.readNext();
             text = "Experiment Time: " + newline[1];
             timeText.setText(text);
+
             newline = reader.readNext();
             text = "Activity Type: " + newline[1];
             activityText.setText(text);
+
             newline = reader.readNext();
-            text = "Steps Count: " + newline[1];
-            stepsText.setText(text);
+            text = "Estimate Steps Count: " + newline[1];
+            estimateStepsText.setText(text);
+
+            newline = reader.readNext();
+            text = "Real Steps Count: " + newline[1];
+            realStepsText.setText(text);
+
             reader.readNext();
             reader.readNext();
             newline = reader.readNext();
@@ -109,38 +113,26 @@ public class LoadCSV extends AppCompatActivity {
         return CsvData;
     }
 
-    private ArrayList<Entry> DataValues(ArrayList<String[]> csvData, int index){
+    private ArrayList<Entry> DataValues(ArrayList<String[]> csvData){
         ArrayList<Entry> dataVals = new ArrayList<Entry>();
         for (int i = 0; i < csvData.size(); i++){
-
             dataVals.add(new Entry(Float.parseFloat(csvData.get(i)[0]),
-                    Float.parseFloat(csvData.get(i)[index])));
-
-
+                    Float.parseFloat(csvData.get(i)[1])));
         }
-
         return dataVals;
     }
 
     private void loadData(){
         ArrayList<String[]> csvData = new ArrayList<>();
 
-        csvData = CsvRead("/sdcard/csv_dir/" + mySpinner.getSelectedItem().toString());
+        csvData = CsvRead("/sdcard/csv_dir_lab7/" + mySpinner.getSelectedItem().toString());
 
-        LineDataSet lineDataSet1 =  new LineDataSet(DataValues(csvData, 1),"X Acceleration");
-        LineDataSet lineDataSet2 =  new LineDataSet(DataValues(csvData, 2),"Y Acceleration");
-        LineDataSet lineDataSet3 =  new LineDataSet(DataValues(csvData, 3),"Z Acceleration");
-        lineDataSet1.setColor(Color.RED);
-        lineDataSet2.setColor(Color.BLUE);
-        lineDataSet3.setColor(Color.GREEN);
-        lineDataSet1.setCircleColor(Color.RED);
-        lineDataSet2.setCircleColor(Color.BLUE);
-        lineDataSet3.setCircleColor(Color.GREEN);
+        LineDataSet lineDataSet =  new LineDataSet(DataValues(csvData),"N value");
+        lineDataSet.setColor(Color.BLACK);
+        lineDataSet.setCircleColor(Color.BLACK);
 
         ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-        dataSets.add(lineDataSet1);
-        dataSets.add(lineDataSet2);
-        dataSets.add(lineDataSet3);
+        dataSets.add(lineDataSet);
         LineData data = new LineData(dataSets);
         lineChart.getDescription().setEnabled(false);
         lineChart.setData(data);

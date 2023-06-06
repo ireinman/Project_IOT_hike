@@ -1,4 +1,4 @@
-package com.example.tutorial6;
+package com.example.tutorial7;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -9,9 +9,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.widget.Spinner;
-import android.widget.ArrayAdapter;
-
 
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {

@@ -38,32 +38,16 @@
 
         <TextView
             android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_height="45dp"
             android:layout_weight="1"
             android:textAlignment="center"
             android:textSize="20sp"
             android:text="@string/enter_steps" />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_weight="1"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            android:text="@string/enter_csv_name" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginHorizontal="20dp"
-        android:weightSum="2">
 
         <EditText
             android:id="@+id/editSteps"
             android:layout_width="0dp"
-            android:layout_height="49dp"
+            android:layout_height="45dp"
             android:ems="10"
             android:inputType="number"
             android:textAlignment="center"
@@ -72,25 +56,8 @@
             android:text="0"
             tools:ignore="SpeakableTextPresentCheck" />
 
-        <EditText
-            android:id="@+id/editFileName"
-            android:layout_width="0dp"
-            android:layout_height="49dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:layout_weight="1"
-            android:textAlignment="center"
-            android:text="csv_name"
-            android:textSize="20sp" />
-
     </LinearLayout>
 
-
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="match_parent"
-        android:layout_height="49dp"
-        android:layout_marginHorizontal="20dp"/>
 
 
     <LinearLayout

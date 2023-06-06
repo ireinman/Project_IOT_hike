@@ -1,4 +1,4 @@
-package com.example.tutorial6;
+package com.example.tutorial7;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
