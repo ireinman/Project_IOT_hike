@@ -45,6 +45,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.opencsv.CSVWriter;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -75,10 +77,13 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     ArrayList<ILineDataSet> dataSets = new ArrayList<>();
     LineData data;
     EditText realSteps;
+    TextView estimated_steps;
     boolean workout = false;
     String timeStr = "";
     float firstTime;
     String fileName = "";
+    ArrayList<Float> dataNorm;
+    PyObject pyObject;
 
 
     /*
@@ -91,14 +96,15 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         setRetainInstance(true);
         deviceAddress = getArguments().getString("device");
 
-        if (!Python.isStarted()){
-            Python.start(new AndroidPlatform(getActivity().getApplicationContext()));
-        }
-        // TODO real python file
-        Python py = Python.getInstance();
-        PyObject pyObject = py.getModule("test");
-        PyObject obj = pyObject.callAttr("func", 1,2,3);
-        Toast.makeText(getActivity(),obj.toString() + " from python",Toast.LENGTH_LONG).show();
+
+
+//        if (!Python.isStarted()){
+//            Python.start(new AndroidPlatform(getActivity().getApplicationContext()));
+//        }
+//        Python py = Python.getInstance();
+//        PyObject pyObject = py.getModule("test");
+//        PyObject obj = pyObject.callAttr("func", 1,2,3);
+//        Toast.makeText(getActivity(),obj.toString() + " from python",Toast.LENGTH_LONG).show();
 
     }
 
@@ -178,6 +184,8 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         lineDataSet.setColor(Color.BLACK);
         lineDataSet.setCircleColor(Color.BLACK);
 
+        dataNorm = new ArrayList<>();
+
 
         dataSets.add(lineDataSet);
         data = new LineData(dataSets);
@@ -192,6 +200,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         Button buttonSave = (Button) view.findViewById(R.id.btnSave);
 
         realSteps = (EditText) view.findViewById(R.id.editSteps);
+        estimated_steps = (TextView) view.findViewById(R.id.estimatedStepsText);
 
 
         buttonStart.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +243,16 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
 
             }
         });
+
+        if (!Python.isStarted()){
+            Python.start(new AndroidPlatform(getActivity().getApplicationContext()));
+        }
+
+        /*
+        Python py = Python.getInstance();
+        pyObject = py.getModule("test");
+        PyObject obj = pyObject.callAttr("estimate", last7);
+        estimated_steps.setText(obj.toString()); */
 
         return view;
     }
@@ -331,9 +350,11 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
                         // add received values to line dataset for plotting the line-chart
                         data.addEntry(new Entry(Float.parseFloat(parts[0]) - firstTime,
                                 Float.parseFloat(parts[1])), 0);
+                        dataNorm.add(Float.parseFloat(parts[1]));
                         lineDataSet.notifyDataSetChanged(); // let the data know a dataSet changed
                         mpLineChart.notifyDataSetChanged(); // let the chart know it's data changed
                         mpLineChart.invalidate(); // refresh
+                        update_steps();
 
 
                     }
@@ -404,10 +425,12 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
         workout = false;
 //        while(lineDataSet.removeLast()){}
         lineDataSet.clear();
+        dataNorm.clear();
 //        mpLineChart.invalidate();
         lineDataSet.notifyDataSetChanged(); // let the data know a dataSet changed
         mpLineChart.notifyDataSetChanged(); // let the chart know it's data changed
         mpLineChart.invalidate(); // refresh
+        estimated_steps.setText(String.valueOf(0));
     }
 
     private void saveData(){
@@ -446,6 +469,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
                 .create();
         dialog.show();
     }
+
     private void writeToCsv(String path, String name){
         try {
             CSVWriter csvWriter = new CSVWriter(new FileWriter(path + name, true),
@@ -463,7 +487,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
             csvWriter.writeNext(row);
 
             // TODO: change number saved
-            row = new String[]{"ESTIMATE STEPS:", String.valueOf(2.5), "", ""};
+            row = new String[]{"ESTIMATE STEPS:", estimated_steps.getText().toString(), "", ""};
             csvWriter.writeNext(row);
 
             row = new String[]{"COUNT OF ACTUAL STEPS:", realSteps.getText().toString(), "", ""};
@@ -489,5 +513,43 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
             e.printStackTrace();
         }
     }
+
+    private void update_steps(){
+        List<Entry> vals = lineDataSet.getValues();
+        int size = vals.size(), step;
+
+        if (size >= 2){
+            step = isStep(dataNorm); //, size - 6);
+            estimated_steps.setText(
+                    String.valueOf(Integer.parseInt(estimated_steps.getText().toString()) + step));
+        }
+
+    }
+
+    private int isStep(ArrayList<Float> data){
+        float u = 9.85f;
+        float t = 10.2f + 0.7f;
+        if (data.get(data.size() - 2) > t && data.get(data.size() - 1) < u) {
+            return 1;
+        }
+        return 0;
+    }
+
+//    private int isStep(ArrayList<Float> data, int start_index){ // start_index + window_size = 1 + 5
+//        int window_size = 5;
+//        float u = 9.85f;
+//        float t = 10.2f;
+//        float [] moving_averages = new float[2];
+//        float sum_for_all = 0;
+//        for (int j = 1; j < window_size; j++){
+//            sum_for_all += data.get(start_index + j);
+//        }
+//        moving_averages[0] = (data.get(start_index) + sum_for_all) / window_size;
+//        moving_averages[1] = (data.get(start_index + window_size) + sum_for_all) / window_size;
+//        if (moving_averages[0] > t && moving_averages[1] < u) {
+//            return 1;
+//        }
+//        return 0;
+//    }
 
 }
