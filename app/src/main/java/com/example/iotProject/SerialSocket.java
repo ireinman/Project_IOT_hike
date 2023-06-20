@@ -1,4 +1,4 @@
-package com.example.tutorial7;
+package com.example.iotProject;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;

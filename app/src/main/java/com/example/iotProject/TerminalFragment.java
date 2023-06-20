@@ -1,4 +1,4 @@
-package com.example.tutorial7;
+package com.example.iotProject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.method.ScrollingMovementMethod;
@@ -44,8 +43,6 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.opencsv.CSVWriter;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -417,7 +414,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     }
 
     private void OpenLoadCSV(){
-        Intent intent = new Intent(getContext(),LoadCSV.class);
+        Intent intent = new Intent(getContext(), MainActivity.class);
         startActivity(intent);
     }
 

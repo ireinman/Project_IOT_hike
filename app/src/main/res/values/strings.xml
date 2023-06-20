@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name">tutorial7_hike</string>
+    <string name="app_name">Push Up Challenge</string>
     <string name="devices">Bluetooth Devices</string>
-    <string name="enter_steps">Enter steps:</string>
-    <string name="enter_csv_name">Enter csv name:</string>
 </resources>

@@ -55,7 +55,7 @@
             android:layout_weight="1"
             android:textAlignment="center"
             android:textSize="20sp"
-            android:text="@string/enter_steps" />
+            android:text="" />
 
     </LinearLayout>
 

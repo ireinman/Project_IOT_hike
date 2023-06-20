@@ -1,4 +1,4 @@
-package com.example.tutorial7;
+package com.example.iotProject;
 
 interface SerialListener {
     void onSerialConnect      ();
