@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Push Up Challenge</string>
     <string name="devices">Bluetooth Devices</string>
+    <string name="enter_your_email">Enter your Email</string>
 </resources>
