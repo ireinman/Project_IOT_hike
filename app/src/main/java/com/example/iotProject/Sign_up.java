@@ -20,9 +20,11 @@ import com.google.firebase.auth.FirebaseAuthException;
 
 public class Sign_up extends AppCompatActivity {
     private Button createAccountButton;
+    private Button backToLogInButton;
     private EditText passwordEditText;
     private EditText emailEditText;
     private FirebaseAuth mAuth;
+    private EditText userNameEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +33,15 @@ public class Sign_up extends AppCompatActivity {
         createAccountButton = findViewById(R.id.createAccountButton);
         passwordEditText = findViewById(R.id.passwordEditText);
         emailEditText = findViewById(R.id.emailEditText);
+        backToLogInButton = findViewById(R.id.goLoginButton);
+        userNameEditText = findViewById(R.id.userNameEditText);
+        backToLogInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), Log_in.class);
+                startActivity(intent);
+            }
+        });
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
