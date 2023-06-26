@@ -14,16 +14,16 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.IOTProjectDark" >
-
+        android:theme="@style/Theme.IOTProjectDark">
+        <activity
+            android:name=".Settings"
+            android:exported="false" />
         <activity
             android:name=".Home_screen"
-            android:exported="true">
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".Sign_up"
-            android:exported="true">
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".Log_in"
             android:exported="true">
@@ -35,10 +35,9 @@
         </activity>
         <activity
             android:name=".In_Training"
-            android:exported="true" >
-        </activity>
+            android:exported="true"></activity>
 
-        <service android:name="com.example.iotProject.SerialService" />
+        <service android:name=".SerialService" />
     </application>
 
 </manifest>
