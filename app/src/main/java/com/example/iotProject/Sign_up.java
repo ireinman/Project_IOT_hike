@@ -34,8 +34,14 @@ public class Sign_up extends AppCompatActivity {
     private CheckBox rememberMeCheckBox;
 
     private void writeNewUser(String userId, String name, String email, Boolean rememberMe) {
-        MyUser user = new MyUser(name, email, rememberMe);
-        this.dataBase.child("users").child(userId).setValue(user);
+        MyUser user = new MyUser(name, email, rememberMe, userId);
+        dataBase.child("achievements").child("10-push-ups").child(userId).setValue(0);
+        dataBase.child("achievements").child("50-push-ups").child(userId).setValue(0);
+        dataBase.child("achievements").child("100-push-ups").child(userId).setValue(0);
+        dataBase.child("achievements").child("7-day-streak").child(userId).setValue(0);
+        dataBase.child("achievements").child("30-day-streak").child(userId).setValue(0);
+        dataBase.child("achievements").child("first_training_session").child(userId).setValue(0);
+        dataBase.child("users").child(userId).setValue(user);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
