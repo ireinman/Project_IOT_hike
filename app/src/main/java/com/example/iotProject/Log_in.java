@@ -3,8 +3,10 @@ package com.example.iotProject;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -16,13 +18,22 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Objects;
 
 public class Log_in extends AppCompatActivity {
+
+    private DatabaseReference dataBase;
+    FirebaseUser currentUser;
     private FirebaseAuth mAuth;
     private EditText emailEditText;
     private EditText passwordEditText;
     private Button loginButton;
     private Button signUpButton;
+    private CheckBox rememberMeCheckBox;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +43,7 @@ public class Log_in extends AppCompatActivity {
         passwordEditText = findViewById(R.id.passwordEditText);
         loginButton = findViewById(R.id.logInButton);
         signUpButton = findViewById(R.id.signUpButton);
+        rememberMeCheckBox = findViewById(R.id.rememberMeCheckBox);
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,6 +72,8 @@ public class Log_in extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(getApplicationContext(), " Login Successful", Toast.LENGTH_SHORT).show();
+                                    currentUser = Objects.requireNonNull(task.getResult().getUser());
+                                    dataBase.child("users/" + currentUser.getUid() + "/rememberMe").setValue(rememberMeCheckBox.isChecked());
                                     Intent intent = new Intent(getApplicationContext(), Home_screen.class);
                                     startActivity(intent);
                                     finish();
@@ -77,11 +91,24 @@ public class Log_in extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUser = mAuth.getCurrentUser();
+        dataBase = FirebaseDatabase.getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), Home_screen.class);
-            startActivity(intent);
-            finish();
+            dataBase.child("users").child(currentUser.getUid()).child("rememberMe").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    if (!task.isSuccessful()) {
+                        Log.e("firebase", "Error getting data", task.getException());
+                    }
+                    else {
+                        if((Boolean)(Objects.requireNonNull(task.getResult().getValue()))){
+                            Intent intent = new Intent(getApplicationContext(), Home_screen.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+                }
+            });
         }
     }
 }

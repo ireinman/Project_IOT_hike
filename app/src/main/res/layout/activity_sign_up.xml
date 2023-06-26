@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:hint="Enter User Name"
             android:gravity="center_horizontal"
-            android:inputType="textPassword"
+            android:inputType="text"
             android:maxLines="1"
             android:singleLine="true"
             android:textStyle="bold"
