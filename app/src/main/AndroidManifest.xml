@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.iotProject">
+    package="com.example.iotProject" >
 
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -14,30 +13,54 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.IOTProjectDark">
+        android:theme="@style/Theme.IOTProjectDark" >
+        <activity
+            android:name=".AdvancedStatistics"
+            android:exported="false" />
+        <activity
+            android:name=".BringUp"
+            android:exported="false" />
+        <activity
+            android:name=".TrainSettings"
+            android:exported="false" />
+        <activity
+            android:name=".Progress"
+            android:exported="false" />
         <activity
             android:name=".Settings"
             android:exported="false" />
         <activity
             android:name=".Home_screen"
-            android:exported="true"></activity>
+            android:exported="false" />
         <activity
             android:name=".Sign_up"
-            android:exported="true"></activity>
+            android:exported="false" />
         <activity
             android:name=".Log_in"
-            android:exported="true">
+            android:exported="false" >
+        </activity>
+        <activity
+            android:name=".In_Training"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".In_Training"
-            android:exported="true"></activity>
 
         <service android:name=".SerialService" />
+
+        <receiver
+            android:name=".BatteryCheck"
+            android:enabled="true" />
+
+        <service
+            android:name=".MusicService"
+            android:enabled="true" />
     </application>
 
 </manifest>

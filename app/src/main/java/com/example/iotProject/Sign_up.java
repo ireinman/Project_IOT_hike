@@ -4,13 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -49,51 +47,42 @@ public class Sign_up extends AppCompatActivity {
         backToLogInButton = findViewById(R.id.goLoginButton);
         userNameEditText = findViewById(R.id.userNameEditText);
         dataBase = FirebaseDatabase.getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-        backToLogInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), Log_in.class);
-                startActivity(intent);
-            }
+        backToLogInButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), Log_in.class);
+            startActivity(intent);
         });
-        createAccountButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email, password, userName;
-                email = String.valueOf(emailEditText.getText());
-                password = String.valueOf(passwordEditText.getText());
-                userName = String.valueOf(userNameEditText.getText());
-                Boolean rememberMe = rememberMeCheckBox.isChecked();
-                if(TextUtils.isEmpty(email)){
-                    Toast.makeText(Sign_up.this, "Enter Email", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(password)){
-                    Toast.makeText(Sign_up.this, "Enter password", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Toast.makeText(Sign_up.this, "Account created.",
-                                            Toast.LENGTH_SHORT).show();
-                                    writeNewUser(Objects.requireNonNull(task.getResult().getUser()).getUid(), userName, email, rememberMe);
-                                    Intent intent = new Intent(getApplicationContext(), Log_in.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    FirebaseAuthException e = (FirebaseAuthException )task.getException();
-                                    Log.e("LoginActivity", "Failed Registration", e);
-                                    Toast.makeText(Sign_up.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+        createAccountButton.setOnClickListener(v -> {
+            String email, password, userName;
+            email = String.valueOf(emailEditText.getText());
+            password = String.valueOf(passwordEditText.getText());
+            userName = String.valueOf(userNameEditText.getText());
+            Boolean rememberMe = rememberMeCheckBox.isChecked();
+            if(TextUtils.isEmpty(email)){
+                Toast.makeText(Sign_up.this, "Enter Email", Toast.LENGTH_SHORT).show();
+                return;
             }
+            if(TextUtils.isEmpty(password)){
+                Toast.makeText(Sign_up.this, "Enter password", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Toast.makeText(Sign_up.this, "Account created.",
+                                    Toast.LENGTH_SHORT).show();
+                            writeNewUser(Objects.requireNonNull(task.getResult().getUser()).getUid(), userName, email, rememberMe);
+                            Intent intent = new Intent(getApplicationContext(), Log_in.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            FirebaseAuthException e = (FirebaseAuthException )task.getException();
+                            Log.e("LoginActivity", "Failed Registration", e);
+                            Toast.makeText(Sign_up.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
     }
 }
