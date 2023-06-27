@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
@@ -15,7 +14,7 @@ import androidx.appcompat.widget.Toolbar;
 
 public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+    public static String deviceAddress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,9 +26,6 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
 
         getSupportFragmentManager().addOnBackStackChangedListener(this);
-        if(ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
-            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},0);
-        }
         if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
         }

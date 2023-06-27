@@ -19,8 +19,8 @@ public class In_Training extends AppCompatActivity {
         setContentView(R.layout.activity_in_training);
 
         ImageView imageView = findViewById(R.id.imageView);
-        // Change this value to "pushdown" or "pushup" depends on current mode
-        String mode = "pushup";
+        // Change this value to "pushDown" or "pushUp" depends on current mode
+        String mode = "pushUp";
 
         progressTextView = findViewById(R.id.progressTextView);
         progressBar = findViewById(R.id.progressBar);
@@ -31,9 +31,9 @@ public class In_Training extends AppCompatActivity {
 //         Here's how we will update progress during sessions
 //         update_progress();
 
-        if (mode.equals("pushup")) {
+        if (mode.equals("pushUp")) {
             imageView.setImageResource(R.drawable.pushup);
-        } else if (mode.equals("pushdown")) {
+        } else if (mode.equals("pushDown")) {
             imageView.setImageResource(R.drawable.pushdown);
         }
     }

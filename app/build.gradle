@@ -21,7 +21,7 @@ android {
         }
 
         python {
-            buildPython "/Users/eyaltadmor/opt/anaconda3/bin/python"
+            buildPython "C:/Program Files (x86)/Microsoft Visual Studio/Shared/Python37_64/python"
             pip {
                 install "numpy"
                 install "scipy"
@@ -31,6 +31,11 @@ android {
         sourceSets{
             main{
                 python.srcDir "src/main/python"
+            }
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags ''
             }
         }
     }
@@ -45,6 +50,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -56,5 +64,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.firebase:firebase-auth-ktx:22.0.0'
     implementation 'com.google.firebase:firebase-database:20.2.2'
+    implementation 'com.google.firebase:firebase-auth:22.0.0'
 
 }

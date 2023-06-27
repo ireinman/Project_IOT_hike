@@ -31,6 +31,7 @@
         android:gravity="center_horizontal">
 
         <Button
+            android:id="@+id/trainButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Regular Training"
@@ -52,6 +53,7 @@
         android:gravity="center_horizontal">
 
         <Button
+            android:id="@+id/bringUpButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Bring Sally Up"
@@ -73,6 +75,7 @@
         android:gravity="center_horizontal">
 
         <Button
+            android:id="@+id/progressButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="See Your Progress"
@@ -94,6 +97,7 @@
         android:gravity="center_horizontal">
 
         <Button
+            android:id="@+id/settingsButton"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Settings"
@@ -137,7 +141,7 @@
         android:gravity="center_horizontal">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textView1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"

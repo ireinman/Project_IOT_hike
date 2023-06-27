@@ -1,7 +1,12 @@
 package com.example.iotProject;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -10,7 +15,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,15 +39,24 @@ public class Log_in extends AppCompatActivity {
     private Button loginButton;
     private Button signUpButton;
     private CheckBox rememberMeCheckBox;
+
+    public static MusicService musicService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+
         mAuth = FirebaseAuth.getInstance();
+        registerReceiver(new BatteryCheck(), new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        startMusic();
+
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
+
         loginButton = findViewById(R.id.logInButton);
         signUpButton = findViewById(R.id.signUpButton);
+
         rememberMeCheckBox = findViewById(R.id.rememberMeCheckBox);
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,7 +83,7 @@ public class Log_in extends AppCompatActivity {
                 mAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
+                            public void onComplete(Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(getApplicationContext(), " Login Successful", Toast.LENGTH_SHORT).show();
                                     currentUser = Objects.requireNonNull(task.getResult().getUser());
@@ -111,4 +125,24 @@ public class Log_in extends AppCompatActivity {
             });
         }
     }
+
+    private void startMusic() {
+        musicService = new MusicService();//יצירה של service
+        Intent playIntent = new Intent(this, MusicService.class);//יצירת intent כדי להפעיל את ה-service
+        bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);// יצירה של bind בשביל ה-service
+        startService(playIntent);//הפעלה של ה-service
+    }
+
+    private final ServiceConnection musicConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            musicService = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+        }
+
+    };
 }
