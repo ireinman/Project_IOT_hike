@@ -127,10 +127,10 @@ public class Log_in extends AppCompatActivity {
     }
 
     private void startMusic() {
-        musicService = new MusicService();//יצירה של service
-        Intent playIntent = new Intent(this, MusicService.class);//יצירת intent כדי להפעיל את ה-service
-        bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);// יצירה של bind בשביל ה-service
-        startService(playIntent);//הפעלה של ה-service
+        musicService = new MusicService();
+        Intent playIntent = new Intent(this, MusicService.class);
+        bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+        startService(playIntent);
     }
 
     private final ServiceConnection musicConnection = new ServiceConnection() {
