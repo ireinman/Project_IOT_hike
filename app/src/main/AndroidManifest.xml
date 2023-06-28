@@ -22,7 +22,8 @@
             android:exported="false" />
         <activity
             android:name=".TrainSettings"
-            android:exported="false" />
+            android:exported="false"
+            android:label="Training Settings"/>
         <activity
             android:name=".Progress"
             android:exported="false" />
@@ -37,7 +38,12 @@
             android:exported="false" />
         <activity
             android:name=".Log_in"
-            android:exported="false" >
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".In_Training"
@@ -45,11 +51,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service android:name=".SerialService" />
