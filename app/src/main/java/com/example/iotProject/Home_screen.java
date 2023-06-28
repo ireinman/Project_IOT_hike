@@ -14,7 +14,7 @@ public class Home_screen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
 
-        Button signOutButton = findViewById(R.id.signOutButton);
+        Button signOutButton = findViewById(R.id.goBackButton);
         signOutButton.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(getApplicationContext(), Log_in.class);
