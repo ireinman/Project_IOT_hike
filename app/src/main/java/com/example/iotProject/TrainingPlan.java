@@ -1,6 +1,8 @@
 package com.example.iotProject;
 
-public class TrainingPlan {
+import java.io.Serializable;
+
+public class TrainingPlan implements Serializable {
     private String trainingName;
     public int setsAmount;
     public int reps;
