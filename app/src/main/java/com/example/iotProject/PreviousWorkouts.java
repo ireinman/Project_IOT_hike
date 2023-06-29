@@ -32,13 +32,11 @@ public class PreviousWorkouts extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        Log.i(TAG, "ONSTART!!!!!!!");
         // Check if user is signed in (non-null) and update UI accordingly.
     }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "ONSTART!!!!!!!");
         setContentView(R.layout.prveious_workouts_activity);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -58,10 +56,8 @@ public class PreviousWorkouts extends AppCompatActivity {
             ValueEventListener valueEventListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.i(TAG, "ONDATACHANGE1 !!!!!!!");
                     for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                         String trainingName = childSnapshot.getKey();
-                        Log.i(TAG, "ONDATACHANGE!!!!!!!");
                         // Access the training data fields
                         int setsAmount = childSnapshot.child("setsAmount").getValue(Integer.class);
                         int reps = childSnapshot.child("reps").getValue(Integer.class);
