@@ -100,9 +100,10 @@ public class PreviousWorkouts extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 cardsLayout.removeView(view);
-//                if (currentUser != null) {
-//                    DatabaseReference userTrainingReference = dataBase.child("training_plans/" + currentUser.getUid());
-//                }
+                if (currentUser != null) {
+                    dataBase.child("training_plans/" + currentUser.getUid() + "/" + name)
+                            .removeValue();
+                }
             }
         });
 
