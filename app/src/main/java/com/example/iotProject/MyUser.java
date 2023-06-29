@@ -11,7 +11,6 @@ public class MyUser {
     public String userName;
     public String email;
     public Boolean rememberMe;
-
     public MyUser(){}
     public MyUser(String userName, String email, Boolean rememberMe, String Uid){
         this.userName = userName;
