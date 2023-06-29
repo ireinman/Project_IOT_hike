@@ -7,15 +7,17 @@ import android.widget.Toast;
 
 //מחלקת עזר בשביל ההתראה על סוללה חלשה
 public class BatteryCheck extends BroadcastReceiver {
+    static boolean notify = true;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        int level = intent.getIntExtra("level", 0);//קבלה של האחוזים בסוללה
+        int level = intent.getIntExtra("level", 0);
 
-        if(level < 95)
+        if(level <= 95 && notify)
         {
-            Toast.makeText(context, "Battery Low", Toast.LENGTH_LONG).show();//הודעה על סוללה חלשה
+            Toast.makeText(context, "Battery Low", Toast.LENGTH_LONG).show();
+            notify = false;
         }
     }
 
