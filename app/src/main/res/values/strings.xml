@@ -2,4 +2,7 @@
     <string name="app_name">Push Up Challenge</string>
     <string name="devices">Bluetooth Devices</string>
     <string name="enter_your_email">Enter your Email</string>
+    <string name="push_up_training">Push Up Training</string>
+    <string name="bsu_training">Bring Sally Up</string>
+
 </resources>

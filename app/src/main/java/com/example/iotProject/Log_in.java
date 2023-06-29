@@ -57,47 +57,41 @@ public class Log_in extends AppCompatActivity {
         signUpButton = findViewById(R.id.signUpButton);
 
         rememberMeCheckBox = findViewById(R.id.rememberMeCheckBox);
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), Sign_up.class);
-                startActivity(intent);
-                finish();
-            }
+        signUpButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), Sign_up.class);
+            startActivity(intent);
+            finish();
         });
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email, password;
-                email = String.valueOf(emailEditText.getText());
-                password = String.valueOf(passwordEditText.getText());
-                if(TextUtils.isEmpty(email)){
-                    Toast.makeText(Log_in.this, "Enter Email", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(password)){
-                    Toast.makeText(Log_in.this, "Enter password", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                mAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(), " Login Successful", Toast.LENGTH_SHORT).show();
-                                    currentUser = Objects.requireNonNull(task.getResult().getUser());
-                                    dataBase.child("users/" + currentUser.getUid() + "/rememberMe").setValue(rememberMeCheckBox.isChecked());
-                                    Intent intent = new Intent(getApplicationContext(), Home_screen.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Toast.makeText(Log_in.this, "Authentication failed.",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+        loginButton.setOnClickListener(v -> {
+            String email, password;
+            email = String.valueOf(emailEditText.getText());
+            password = String.valueOf(passwordEditText.getText());
+            if(TextUtils.isEmpty(email)){
+                Toast.makeText(Log_in.this, "Enter Email", Toast.LENGTH_SHORT).show();
+                return;
             }
+            if(TextUtils.isEmpty(password)){
+                Toast.makeText(Log_in.this, "Enter password", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getApplicationContext(), " Login Successful", Toast.LENGTH_SHORT).show();
+                                currentUser = Objects.requireNonNull(task.getResult().getUser());
+                                dataBase.child("users/" + currentUser.getUid() + "/rememberMe").setValue(rememberMeCheckBox.isChecked());
+                                Intent intent = new Intent(getApplicationContext(), Home_screen.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Toast.makeText(Log_in.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
         });
     }
     @Override

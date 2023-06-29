@@ -297,8 +297,6 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
          for (int i = 0; i < stringsArr.length; i++)  {
              stringsArr[i]=stringsArr[i].replaceAll(" ","");
         }
-
-
         return stringsArr;
     }
 
