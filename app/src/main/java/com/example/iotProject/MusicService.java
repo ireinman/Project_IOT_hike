@@ -23,7 +23,7 @@ public class MusicService extends Service{
 
         //הגדרה של המוזיקה ב-MediaPlayer
         player = MediaPlayer.create(this, R.raw.bring_sally_up);
-        player.setLooping(false);
+        player.setLooping(true);
         player.start();
 
         // הגדרה של מאפייני נגן המוסיקה

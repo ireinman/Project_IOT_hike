@@ -29,9 +29,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.*;
+//import androidx.annotation.NotNull;
+//import androidx.annotation.Nullable;
+//import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.chaquo.python.PyObject;
@@ -297,8 +298,6 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
          for (int i = 0; i < stringsArr.length; i++)  {
              stringsArr[i]=stringsArr[i].replaceAll(" ","");
         }
-
-
         return stringsArr;
     }
 

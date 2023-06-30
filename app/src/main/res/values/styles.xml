@@ -4,4 +4,16 @@
         <item name="android:background">@color/gray_400</item>
         <item name="exampleColor">@color/light_blue_400</item>
     </style>
+
+    <style name="switch_style">
+        <item name="colorControlActivated">#FF0000</item>
+
+        <!-- inactive thumb color -->
+        <item name="colorSwitchThumbNormal">#00FF00
+        </item>
+
+        <!-- inactive track color (30% transparency) -->
+        <item name="android:colorForeground">#0000FF
+        </item>
+    </style>
 </resources>
