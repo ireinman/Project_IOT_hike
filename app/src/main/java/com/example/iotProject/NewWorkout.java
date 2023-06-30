@@ -11,6 +11,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class NewWorkout extends AppCompatActivity {
     private AlertDialog dialog;
     private TrainingPlan tp;
@@ -67,10 +72,6 @@ public class NewWorkout extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.show();
-                Intent intent = new Intent(getApplicationContext(), In_Training.class);
-                intent.putExtra("trainingPlan", tp);
-                startActivity(intent);
-                finish();
             }
         });
     }
@@ -90,6 +91,11 @@ public class NewWorkout extends AppCompatActivity {
                         tp = new TrainingPlan(name.getText().toString(),
                                 Integer.parseInt(setsText.getText().toString()),
                                 Integer.parseInt(repsText.getText().toString()));
+                        writeTPToDataBase();
+                        Intent intent = new Intent(getApplicationContext(), In_Training.class);
+                        intent.putExtra("trainingPlan", tp);
+                        startActivity(intent);
+                        finish();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -102,6 +108,14 @@ public class NewWorkout extends AppCompatActivity {
         dialog = builder.create();
     }
     private void writeTPToDataBase(){
-
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser!=null){
+            String uid = currentUser.getUid();
+            DatabaseReference dataBase = dataBase = FirebaseDatabase.
+                    getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
+                    getReference("training_plans/"+uid+"/"+tp.getTrainingName());
+            dataBase.child("reps").setValue(tp.reps);
+            dataBase.child("setsAmount").setValue(tp.setsAmount);
+        }
     }
 }
