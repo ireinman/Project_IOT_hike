@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import org.apache.commons.lang3.text.WordUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -71,7 +72,7 @@ public class AcheivementsScreen extends AppCompatActivity {
         ProgressBar progressBar = view.findViewById(R.id.progressBar);
         TextView progressText = view.findViewById(R.id.progressText);
 
-        nameView.setText(name);
+        nameView.setText(WordUtils.capitalize(name.replace("-", " ")));
         progressBar.setMax(cap);
         progressBar.setProgress(progress);
         progressText.setText(progress +"/"+cap);
