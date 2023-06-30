@@ -30,7 +30,7 @@ public class Home_screen extends AppCompatActivity {
         });
         Button progressButton = findViewById(R.id.progressButton);
         progressButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), AdvancedStatistics.class);
+            Intent intent = new Intent(getApplicationContext(), Progress.class);
             startActivity(intent);
             finish();
         });

@@ -38,10 +38,7 @@ public class NewWorkout extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 tp = new TrainingPlan("Beginner Workout", 3, 10);
-                Intent intent = new Intent(getApplicationContext(), In_Training.class);
-                intent.putExtra("trainingPlan", tp);
-                startActivity(intent);
-                finish();
+                goInTraining();
             }
         });
         CardView intermediateCard = findViewById(R.id.intermediateWorkoutButton);
@@ -49,10 +46,7 @@ public class NewWorkout extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 tp = new TrainingPlan("intermediate Workout", 5, 15);
-                Intent intent = new Intent(getApplicationContext(), In_Training.class);
-                intent.putExtra("trainingPlan", tp);
-                startActivity(intent);
-                finish();
+                goInTraining();
             }
         });
         CardView advancedCard = findViewById(R.id.advancedWorkoutButton);
@@ -60,10 +54,7 @@ public class NewWorkout extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 tp = new TrainingPlan("advanced Workout", 5, 15);
-                Intent intent = new Intent(getApplicationContext(), In_Training.class);
-                intent.putExtra("trainingPlan", tp);
-                startActivity(intent);
-                finish();
+                goInTraining();
             }
         });
 
@@ -92,10 +83,7 @@ public class NewWorkout extends AppCompatActivity {
                                 Integer.parseInt(setsText.getText().toString()),
                                 Integer.parseInt(repsText.getText().toString()));
                         writeTPToDataBase();
-                        Intent intent = new Intent(getApplicationContext(), In_Training.class);
-                        intent.putExtra("trainingPlan", tp);
-                        startActivity(intent);
-                        finish();
+                        goInTraining();
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -107,11 +95,17 @@ public class NewWorkout extends AppCompatActivity {
 
         dialog = builder.create();
     }
+    private void goInTraining(){
+        Intent intent = new Intent(getApplicationContext(), In_Training.class);
+        intent.putExtra("trainingPlan", tp);
+        startActivity(intent);
+        finish();
+    }
     private void writeTPToDataBase(){
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if(currentUser!=null){
             String uid = currentUser.getUid();
-            DatabaseReference dataBase = dataBase = FirebaseDatabase.
+            DatabaseReference dataBase = FirebaseDatabase.
                     getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
                     getReference("training_plans/"+uid+"/"+tp.getTrainingName());
             dataBase.child("reps").setValue(tp.reps);
