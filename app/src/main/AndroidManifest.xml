@@ -55,6 +55,8 @@
         <activity android:name=".PreviousWorkouts"
             android:exported="true"/>
         <activity android:name=".NewWorkout" android:exported="true"/>
+        <activity android:name=".AcheivementsScreen" android:exported="true"/>
+        <activity android:name=".LeaderBoardsScreen" android:exported="true"/>
 
         <service android:name=".SerialService" />
 
