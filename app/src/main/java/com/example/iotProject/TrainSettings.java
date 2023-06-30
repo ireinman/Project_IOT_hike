@@ -18,29 +18,20 @@ public class TrainSettings extends AppCompatActivity {
         goBackButton = findViewById(R.id.goBackButton);
         goPreviousWorkouts = findViewById(R.id.previousWorkoutsCardView);
         CardView goNewWorkout = findViewById(R.id.newWorkoutCard);
-        goNewWorkout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), NewWorkout.class);
-                startActivity(intent);
-                finish();
-            }
+        goNewWorkout.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), NewWorkout.class);
+            startActivity(intent);
+            finish();
         });
-        goPreviousWorkouts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), PreviousWorkouts.class);
-                startActivity(intent);
-                finish();
-            }
+        goPreviousWorkouts.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), PreviousWorkouts.class);
+            startActivity(intent);
+            finish();
         });
-        goBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), Home_screen.class);
-                startActivity(intent);
-                finish();
-            }
+        goBackButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), Home_screen.class);
+            startActivity(intent);
+            finish();
         });
     }
 }

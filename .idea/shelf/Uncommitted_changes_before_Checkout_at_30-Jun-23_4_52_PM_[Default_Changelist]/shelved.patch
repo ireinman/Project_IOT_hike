@@ -1,0 +1,29 @@
+Index: app/src/main/java/com/example/iotProject/TrainSettings.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.iotProject;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\n\r\nimport android.content.Intent;\r\nimport android.os.Bundle;\r\nimport android.view.View;\r\nimport android.widget.Button;\r\n\r\npublic class TrainSettings extends AppCompatActivity {\r\n    private Button goBackButton;\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_train_settings);\r\n        goBackButton = findViewById(R.id.goBackButton);\r\n        goBackButton.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                Intent intent = new Intent(getApplicationContext(), Home_screen.class);\r\n                startActivity(intent);\r\n                finish();\r\n            }\r\n        });\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/iotProject/TrainSettings.java b/app/src/main/java/com/example/iotProject/TrainSettings.java
+--- a/app/src/main/java/com/example/iotProject/TrainSettings.java	(revision 8f0a2442ff4a9349bdc76f44eaf1935ba93fd667)
++++ b/app/src/main/java/com/example/iotProject/TrainSettings.java	(date 1688133147220)
+@@ -14,13 +14,10 @@
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_train_settings);
+         goBackButton = findViewById(R.id.goBackButton);
+-        goBackButton.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View v) {
+-                Intent intent = new Intent(getApplicationContext(), Home_screen.class);
+-                startActivity(intent);
+-                finish();
+-            }
++        goBackButton.setOnClickListener(v -> {
++            Intent intent = new Intent(getApplicationContext(), Home_screen.class);
++            startActivity(intent);
++            finish();
+         });
+     }
+ }
+\ No newline at end of file
