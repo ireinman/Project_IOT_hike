@@ -17,6 +17,9 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
 import com.github.mikephil.charting.data.Entry;
 import java.util.ArrayList;
 
@@ -33,26 +36,20 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     private Connected connected = Connected.False;
     private boolean initialStart = true;
 
-//    private TextView receiveText;
-//    private TextView sendText;
-//    private TextUtil.HexWatcher hexWatcher;
-//    private boolean hexEnabled = false;
-//    private boolean pendingNewline = false;
-//    private final String newline = TextUtil.newline_crlf;
-
     boolean inTrain = false;
-    float lastTime = 0;
-    float startTime = -1;
+    float lastTime = 0, startTime = -1;
     final float LENGTH = 60 * 3 + 30;
     final float[] checkPoints = {12, 17, 25, 30, 37, 42, 48, 56, 59, 64,
             72, 77, 83, 92, 95, 101, 106, 112, 118, 124, 130, 136, 142, 149,
             154, 160, 167, 174, 178, 184, 190, 196, 203, 207};
-    int checkIndex = 0;
+    int checkIndex = 0, realTime;
+    String msg, textTime;
+    final String startText = "0:00";
+
     ArrayList<Entry> data = new ArrayList<>();
-
     MediaPlayer player;
-
-
+    ProgressBar progressBar;
+    TextView progressTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +61,9 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         Button stopButton = findViewById(R.id.stopButton);
         stopButton.setOnClickListener(view -> stopTraining(2));
         player = MediaPlayer.create(this, R.raw.bring_sally_up);
-
-
+        progressBar = findViewById(R.id.progressBar);
+        progressTextView = findViewById(R.id.progressTextView);
+        progressTextView.setText(startText);
     }
 
     private void startTraining(){
@@ -82,6 +80,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         if (inTrain){
             player.stop();
             player.release();
+            progressTextView.setText(startText);
             // 0: training end, 1: the user wasn't down when he should, 2: the user quited
             // TODO: calc train stats and create a dialog - home screen and progress
         }
@@ -99,7 +98,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     private void receive(byte[] message) {
         if (!inTrain)
             return;
-        String msg = new String(message);
+        msg = new String(message);
         // check message length
         if (msg.length() <= 0) // ! newline.equals(TextUtil.newline_crlf) ||
             return;
@@ -111,22 +110,29 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         if (startTime == -1)
             startTime = Float.parseFloat(parts[0]);
         if (Float.parseFloat(parts[0]) <= 5){
+            realTime = 5 - (int)(Float.parseFloat(parts[0]) - startTime);
+            progressTextView.setText(realTime);
             return;
         }
         lastTime = Float.parseFloat(parts[0]) - startTime;
         if (lastTime > LENGTH) {
             stopTraining(0);
+            progressBar.setProgress(100);
             return;
         }
         int state = checkState();
         if (checkIndex < checkPoints.length && checkPoints[checkIndex] <= lastTime){
             checkIndex++;
-            if (state == 0) { // he is down
+            if (state == 0) { // he is up
                 stopTraining(1);
                 return;
             }
         }
         data.add(new Entry(lastTime,  Float.parseFloat(parts[1])));
+        progressBar.setProgress((int) (100 * (lastTime - 5) / (LENGTH - 5)));
+        realTime = (int)(lastTime - 5);
+        textTime = (realTime / 60) + ":" + (realTime % 60);
+        progressTextView.setText(textTime);
     }
 
     private String[] clean_str(String[] stringsArr){
