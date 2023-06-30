@@ -2,25 +2,24 @@ package com.example.iotProject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.text.Editable;
+import android.os.PowerManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-import android.widget.TextView;
-
+import android.widget.Button;
 import com.github.mikephil.charting.data.Entry;
+import java.util.ArrayList;
 
-// 12, 17, 25, 30, 37, 42, 48, 56, 59, 64, 72, 77, 83, 92, 95, 101, 106, 112, 118, 124, 130,
-// 136, 142, 149, 154, 160, 167, 174, 178, 184, 190, 196, 203, 207
 public class BringUp extends AppCompatActivity implements ServiceConnection, SerialListener{
 
     @Override
@@ -31,35 +30,103 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     private enum Connected { False, Pending, True }
     private String deviceAddress;
     private SerialService service;
+    private Connected connected = Connected.False;
+    private boolean initialStart = true;
 
 //    private TextView receiveText;
 //    private TextView sendText;
 //    private TextUtil.HexWatcher hexWatcher;
-
-    private Connected connected = Connected.False;
-    private boolean initialStart = true;
 //    private boolean hexEnabled = false;
 //    private boolean pendingNewline = false;
 //    private final String newline = TextUtil.newline_crlf;
+
+    boolean inTrain = false;
+    float lastTime = 0;
+    float startTime = -1;
+    final float LENGTH = 60 * 3 + 30;
+    final float[] checkPoints = {12, 17, 25, 30, 37, 42, 48, 56, 59, 64,
+            72, 77, 83, 92, 95, 101, 106, 112, 118, 124, 130, 136, 142, 149,
+            154, 160, 167, 174, 178, 184, 190, 196, 203, 207};
+    int checkIndex = 0;
+    ArrayList<Entry> data = new ArrayList<>();
+
+    MediaPlayer player;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bring_up);
         deviceAddress = MainActivity.deviceAddress;
+        Button startButton = findViewById(R.id.startButton);
+        startButton.setOnClickListener(view -> {startTraining(); });
+        Button stopButton = findViewById(R.id.stopButton);
+        stopButton.setOnClickListener(view -> stopTraining(2));
+        player = MediaPlayer.create(this, R.raw.bring_sally_up);
+
+
+    }
+
+    private void startTraining(){
+        if (!inTrain){
+            player = MediaPlayer.create(this, R.raw.bring_sally_up);
+            player.setLooping(false);
+            player.start();
+            initMusicPlayer();
+        }
+        inTrain = true;
+    }
+
+    private void stopTraining(int reason) {
+        if (inTrain){
+            player.stop();
+            player.release();
+            // 0: training end, 1: the user wasn't down when he should, 2: the user quited
+            // TODO: calc train stats and create a dialog - home screen and progress
+        }
+        inTrain = false;
+    }
+
+
+    private int checkState() {
+        // TODO: 0 if up 1 if down
+        // TODO update picture
+        return 1;
     }
 
 
     private void receive(byte[] message) {
+        if (!inTrain)
+            return;
         String msg = new String(message);
         // check message length
         if (msg.length() <= 0) // ! newline.equals(TextUtil.newline_crlf) ||
             return;
         msg = msg.replace(TextUtil.newline_crlf, TextUtil.emptyString);
-        // split message string by ',' char
-        String[] parts = msg.split(",");
-        // function to trim blank spaces
-        parts = clean_str(parts);
+        // split message string by ',' char and trim blank spaces
+        String[] parts = clean_str(msg.split(","));
+        // TODO update arduino - only time and y
+        // TODO upgrade speed by scanning all of parts
+        if (startTime == -1)
+            startTime = Float.parseFloat(parts[0]);
+        if (Float.parseFloat(parts[0]) <= 5){
+            return;
+        }
+        lastTime = Float.parseFloat(parts[0]) - startTime;
+        if (lastTime > LENGTH) {
+            stopTraining(0);
+            return;
+        }
+        int state = checkState();
+        if (checkIndex < checkPoints.length && checkPoints[checkIndex] <= lastTime){
+            checkIndex++;
+            if (state == 0) { // he is down
+                stopTraining(1);
+                return;
+            }
+        }
+        data.add(new Entry(lastTime,  Float.parseFloat(parts[1])));
     }
 
     private String[] clean_str(String[] stringsArr){
@@ -199,7 +266,11 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     }
 
     @Override
-    public void onSerialIoError(Exception e) {
+    public void onSerialIoError(Exception e) {}
 
+    public void initMusicPlayer() {
+        player.setWakeMode(getApplicationContext(),
+                PowerManager.PARTIAL_WAKE_LOCK);
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
     }
 }
