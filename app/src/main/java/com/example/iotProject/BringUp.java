@@ -23,12 +23,8 @@ import android.widget.TextView;
 import com.github.mikephil.charting.data.Entry;
 import java.util.ArrayList;
 
-public class BringUp extends AppCompatActivity implements ServiceConnection, SerialListener{
+public class BringUp extends AppCompatActivity implements ServiceConnection, SerialListener {
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-        super.onPointerCaptureChanged(hasCapture);
-    }
 
     private enum Connected { False, Pending, True }
     private String deviceAddress;
@@ -36,13 +32,12 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     private Connected connected = Connected.False;
     private boolean initialStart = true;
 
-    boolean inTrain = false;
-    float lastTime = 0, startTime = -1;
-    final float LENGTH = 60 * 3 + 30;
-    final float[] checkPoints = {12, 17, 25, 30, 37, 42, 48, 56, 59, 64,
+    private boolean inTrain = false;
+    private float startTime = -1;
+    private final float[] checkPoints = {12, 17, 25, 30, 37, 42, 48, 56, 59, 64,
             72, 77, 83, 92, 95, 101, 106, 112, 118, 124, 130, 136, 142, 149,
             154, 160, 167, 174, 178, 184, 190, 196, 203, 207};
-    int checkIndex = 0, realTime;
+    private int checkIndex = 0;
     String msg, textTime;
     final String startText = "0:00";
 
@@ -57,7 +52,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         setContentView(R.layout.activity_bring_up);
         deviceAddress = MainActivity.deviceAddress;
         Button startButton = findViewById(R.id.startButton);
-        startButton.setOnClickListener(view -> {startTraining(); });
+        startButton.setOnClickListener(view -> startTraining());
         Button stopButton = findViewById(R.id.stopButton);
         stopButton.setOnClickListener(view -> stopTraining(2));
         player = MediaPlayer.create(this, R.raw.bring_sally_up);
@@ -82,7 +77,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
             player.release();
             progressTextView.setText(startText);
             // 0: training end, 1: the user wasn't down when he should, 2: the user quited
-            // TODO: calc train stats and create a dialog - home screen and progress
+            // TODO: calc train stats, save to firebase and create a dialog to HomeScreen / progress
         }
         inTrain = false;
     }
@@ -109,12 +104,14 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         // TODO upgrade speed by scanning all of parts
         if (startTime == -1)
             startTime = Float.parseFloat(parts[0]);
+        int realTime;
         if (Float.parseFloat(parts[0]) <= 5){
             realTime = 5 - (int)(Float.parseFloat(parts[0]) - startTime);
             progressTextView.setText(realTime);
             return;
         }
-        lastTime = Float.parseFloat(parts[0]) - startTime;
+        float lastTime = Float.parseFloat(parts[0]) - startTime;
+        float LENGTH = 60 * 3 + 30;
         if (lastTime > LENGTH) {
             stopTraining(0);
             progressBar.setProgress(100);
@@ -278,5 +275,10 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         player.setWakeMode(getApplicationContext(),
                 PowerManager.PARTIAL_WAKE_LOCK);
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
     }
 }
