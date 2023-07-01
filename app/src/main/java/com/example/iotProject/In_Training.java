@@ -44,7 +44,7 @@ public class In_Training extends AppCompatActivity implements ServiceConnection,
 
     private int progress;
     private ProgressBar progressBar;
-    private TextView progressTextView;
+    private TextView progressTextView, setsTextView;
     private String progressText;
 
     @Override
@@ -58,6 +58,7 @@ public class In_Training extends AppCompatActivity implements ServiceConnection,
         Button stopButton = findViewById(R.id.stopButton);
         stopButton.setOnClickListener(view -> stopTraining(2));
         player = MediaPlayer.create(this, R.raw.bring_sally_up);
+        setsTextView = findViewById(R.id.setsTextView);
         progressTextView = findViewById(R.id.progressTextView);
         progressBar = findViewById(R.id.progressBar);
         progress = progressBar.getProgress();
@@ -82,7 +83,7 @@ public class In_Training extends AppCompatActivity implements ServiceConnection,
 
     private void stopTraining(int reason) {
         if (inTrain){
-            // TODO update set count
+            // TODO update set count setsTextView
             progressTextView.setText("");
             // 0: training end, 1: the user wasn't down when he should, 2: the user quited
             // TODO: calc train stats and create a dialog - home screen and progress
@@ -129,6 +130,7 @@ public class In_Training extends AppCompatActivity implements ServiceConnection,
         if (music_on) {
             player.stop();
             player.release();
+            music_on = false;
         }
         // TODO get push ups and update progress bar / stop train (or set)
         lastTime = Float.parseFloat(parts[0]) - startTime;
