@@ -2,6 +2,7 @@ package com.example.iotProject;
 
 import static android.content.ContentValues.TAG;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -38,7 +39,16 @@ public class PreviousWorkouts extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.prveious_workouts_activity);
+        setContentView(R.layout.previous_workouts_activity);
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent intent = new Intent(getApplicationContext(), TrainSettings.class);
+                startActivity(intent);
+                finish();
+            }
+        };
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         dataBase = FirebaseDatabase.getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
@@ -85,8 +95,8 @@ public class PreviousWorkouts extends AppCompatActivity {
 
         TextView nameView = view.findViewById(R.id.workout_name);
         Button delete = view.findViewById(R.id.delete);
-        TextView numSetsText = view.findViewById(R.id.sets_num_view);
-        TextView numRepsText = view.findViewById(R.id.reps_num_view);
+        TextView numSetsText = view.findViewById(R.id.num_sets_text_view);
+        TextView numRepsText = view.findViewById(R.id.repetitions_per_set);
         CardView card = view.findViewById(R.id.card_view);
         card.setOnClickListener(view1 -> {
             Intent intent = new Intent(getApplicationContext(), DeviceActivity.class);
@@ -97,8 +107,10 @@ public class PreviousWorkouts extends AppCompatActivity {
             });
 
         nameView.setText(trainingPlan.getTrainingName());
-        numSetsText.setText(trainingPlan.setsAmount);
-        numRepsText.setText(trainingPlan.reps);
+        String text = "Repetitions per set: " + trainingPlan.setsAmount;
+        numSetsText.setText(text);
+        text = "Number of sets: " + trainingPlan.reps;
+        numRepsText.setText(text);
 
 
         delete.setOnClickListener(v -> {

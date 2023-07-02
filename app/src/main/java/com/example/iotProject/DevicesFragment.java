@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.ListFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,6 +50,15 @@ public class DevicesFragment extends ListFragment {
                 return view;
             }
         };
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent intent = new Intent(getActivity().getApplicationContext(), HomeScreen.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+        };
+        getActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
     @Override
@@ -116,6 +127,7 @@ public class DevicesFragment extends ListFragment {
         else
             intent = new Intent(getContext(), BringUp.class);
         startActivity(intent);
+        getActivity().finish();
     }
 
     /**

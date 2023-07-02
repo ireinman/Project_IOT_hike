@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.data.Entry;
@@ -69,6 +70,13 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
         setsTextView.setText(progressText);
         progressTextView = findViewById(R.id.progressTextView);
         progressTextView.setText("");
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                stopTraining(false);
+            }
+        };
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
 
     }
 

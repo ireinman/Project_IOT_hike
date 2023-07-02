@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -23,6 +24,15 @@ public class NewWorkout extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_workout_activity);
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent intent = new Intent(getApplicationContext(), TrainSettings.class);
+                startActivity(intent);
+                finish();
+            }
+        };
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
         Button goBack = findViewById(R.id.goBackButton);
         goBack.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), TrainSettings.class);
@@ -49,25 +59,6 @@ public class NewWorkout extends AppCompatActivity {
         customCard.setOnClickListener(v -> buildDialog());
     }
     private void buildDialog() {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        View view = getLayoutInflater().inflate(R.layout.custom_training_dialog, null);
-//
-//        final EditText setsText = view.findViewById(R.id.setsEdit);
-//        final EditText repsText = view.findViewById(R.id.repsEdit);
-//        final EditText name = view.findViewById(R.id.nameEdit);
-//
-//        builder.setView(view);
-//        builder.setTitle("Custom Training")
-//                .setPositiveButton("OK", (dialog, which) -> {
-//                    tp = new TrainingPlan(name.getText().toString(),
-//                            Integer.parseInt(setsText.getText().toString()),
-//                            Integer.parseInt(repsText.getText().toString()));
-//                    writeTPToDataBase();
-//                    goInTraining();
-//                })
-//                .setNegativeButton("Cancel", null);
-//
-//        dialog = builder.create();
         View view = getLayoutInflater().inflate(R.layout.custom_training_dialog, null);
         final EditText setsText = view.findViewById(R.id.setsEdit);
         final EditText repsText = view.findViewById(R.id.repsEdit);

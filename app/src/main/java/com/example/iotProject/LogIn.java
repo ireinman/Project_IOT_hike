@@ -10,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -78,6 +79,10 @@ public class LogIn extends AppCompatActivity {
                         }
                     });
         });
+        OnBackPressedCallback callback = new OnBackPressedCallback(false) {
+            @Override
+            public void handleOnBackPressed() {}};
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
     }
     @Override
     public void onStart() {

@@ -51,32 +51,12 @@
                     android:text="Number of sets:"/>
 
                 <TextView
-                    android:id="@+id/sets_num_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/workout_name"
-                    android:layout_marginStart="4dp"
-                    android:layout_toEndOf="@id/num_sets_text_view"
-                    android:text="5"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-                <TextView
                     android:id="@+id/repetitions_per_set"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/num_sets_text_view"
                     android:textSize="18sp"
-                    android:text="Repetetions per set:"/>
-                <TextView
-                    android:id="@+id/reps_num_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/num_sets_text_view"
-                    android:layout_marginStart="4dp"
-                    android:layout_toEndOf="@id/repetitions_per_set"
-                    android:text="5"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:text="Repetitions per set:"/>
             </RelativeLayout>
 
         </androidx.cardview.widget.CardView>

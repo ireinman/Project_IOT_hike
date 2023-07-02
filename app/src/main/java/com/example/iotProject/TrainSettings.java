@@ -1,5 +1,6 @@
 package com.example.iotProject;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -14,6 +15,15 @@ public class TrainSettings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_train_settings);
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+                startActivity(intent);
+                finish();
+            }
+        };
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
         goBackButton = findViewById(R.id.goBackButton);
         goPreviousWorkouts = findViewById(R.id.previousWorkoutsCardView);
         CardView goNewWorkout = findViewById(R.id.newWorkoutCard);
