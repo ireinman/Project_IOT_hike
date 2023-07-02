@@ -1,12 +1,17 @@
 package com.example.iotProject;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,12 +19,16 @@ import androidx.cardview.widget.CardView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class NewWorkout extends AppCompatActivity {
     private AlertDialog dialog;
     private TrainingPlan tp;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +67,7 @@ public class NewWorkout extends AppCompatActivity {
         CardView customCard = findViewById(R.id.customWorkoutButton);
         customCard.setOnClickListener(v -> buildDialog());
     }
+
     private void buildDialog() {
         View view = getLayoutInflater().inflate(R.layout.custom_training_dialog, null);
         final EditText setsText = view.findViewById(R.id.setsEdit);
@@ -70,29 +80,56 @@ public class NewWorkout extends AppCompatActivity {
                     tp = new TrainingPlan(name.getText().toString(),
                             Integer.parseInt(setsText.getText().toString()),
                             Integer.parseInt(repsText.getText().toString()));
-                    writeTPToDataBase();
-                    goInTraining();
+                    writeIfUnique();
                 })
                 .setPositiveButton("Cancel", null)
                 .create();
         dialog.show();
     }
-    private void goInTraining(){
-        Intent intent = new Intent(getApplicationContext(), DeviceActivity.class);
+
+    private void goInTraining() {
+        Intent intent = new Intent(getApplicationContext(), InTraining.class);
         intent.putExtra("trainingPlan", tp);
         intent.putExtra("type", 0);
         startActivity(intent);
         finish();
     }
-    private void writeTPToDataBase(){
+
+    private void writeTPToDataBase() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(currentUser!=null){
+        if (currentUser != null) {
             String uid = currentUser.getUid();
             DatabaseReference dataBase = FirebaseDatabase.
                     getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
-                    getReference("training_plans/"+uid+"/"+tp.getTrainingName());
+                    getReference("training_plans/" + uid + "/" + tp.getTrainingName());
             dataBase.child("reps").setValue(tp.reps);
             dataBase.child("setsAmount").setValue(tp.setsAmount);
+        }
+    }
+
+    private void writeIfUnique() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            DatabaseReference dataBase = FirebaseDatabase.
+                    getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
+                    getReference("training_plans/" + uid + "/" + tp.getTrainingName());
+            dataBase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Toast.makeText(NewWorkout.this, "Training name exists", Toast.LENGTH_SHORT).show();
+                    } else {
+                        writeTPToDataBase();
+                        goInTraining();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.w(TAG, "loadPost:onCancelled", error.toException());
+                }
+            });
         }
     }
 }
