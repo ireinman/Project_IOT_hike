@@ -86,7 +86,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -94,7 +94,6 @@
             android:id="@+id/setsTextView"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:layout_marginTop="10dp"
             android:gravity="center"
             android:textSize="38sp"
             android:textStyle="bold"
@@ -106,7 +105,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -126,7 +125,7 @@
             android:layout_height="50dp"
             android:orientation="vertical"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:gravity="center">
         <TextView
             android:id="@+id/progressTextView"
@@ -139,6 +138,40 @@
             android:textColor="#FFFFFF"/>
 
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LinearLayout02"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp">
+
+        <Button
+            android:id="@+id/stopButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:layout_marginHorizontal = '5dp'
+            android:background="@drawable/rounded_corners"
+            android:text="Stop">
+        </Button>
+
+        <Button
+            android:id="@+id/startButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:background="@drawable/rounded_corners"
+            android:layout_marginHorizontal = '5dp'
+            android:text="Start">
+        </Button>
     </LinearLayout>
 
 

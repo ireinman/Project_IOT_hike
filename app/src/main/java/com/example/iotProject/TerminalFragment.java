@@ -446,20 +446,17 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
                 .setTitle("Save to CSV")
                 .setMessage("Enter the name of the file")
                 .setView(taskEditText)
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        fileName = String.valueOf(taskEditText.getText());
-                        String fileRealName = fileName + ".csv";
-                        for (File file : listOfFiles) {
-                            if (fileRealName.equals(file.getName())) {
-                                Toast.makeText(getContext(), "This file already exist",
-                                        Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+                .setPositiveButton("Save", (dialog1, which) -> {
+                    fileName = String.valueOf(taskEditText.getText());
+                    String fileRealName = fileName + ".csv";
+                    for (File file : listOfFiles) {
+                        if (fileRealName.equals(file.getName())) {
+                            Toast.makeText(getContext(), "This file already exist",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
                         }
-                        writeToCsv(path, fileRealName);
                     }
+                    writeToCsv(path, fileRealName);
                 })
                 .setNegativeButton("Cancel", null)
                 .create();

@@ -6,12 +6,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.ListFragment;
-
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,23 +17,24 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.Collections;
-import static com.example.iotProject.MainActivity.deviceAddress;// העצם של ההגדרות
 
-@SuppressLint("MissingPermission")
+import static com.example.iotProject.MainActivity.deviceAddress;
+
 public class DevicesFragment extends ListFragment {
 
     private BluetoothAdapter bluetoothAdapter;
     private final ArrayList<BluetoothDevice> listItems = new ArrayList<>();
     private ArrayAdapter<BluetoothDevice> listAdapter;
 
+    @SuppressLint("InlinedApi")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
+        if (getContext() == null || getActivity() == null)
+            return;
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
         }
@@ -46,6 +44,8 @@ public class DevicesFragment extends ListFragment {
             @Override
             public View getView(int position, View view, ViewGroup parent) {
                 BluetoothDevice device = listItems.get(position);
+                if (getActivity() == null)
+                    return null;
                 if (view == null)
                     view = getActivity().getLayoutInflater().inflate(R.layout.device_list_item, parent, false);
                 TextView text1 = view.findViewById(R.id.text1);
@@ -121,7 +121,7 @@ public class DevicesFragment extends ListFragment {
 //        getFragmentManager().beginTransaction().replace(R.id.fragment, fragment, "terminal").addToBackStack(null).commit();
         BluetoothDevice device = listItems.get(position - 1);
         deviceAddress = device.getAddress();
-        Intent intent = new Intent(getContext(), Log_in.class);
+        Intent intent = new Intent(getContext(), LogIn.class);
         startActivity(intent);
     }
 

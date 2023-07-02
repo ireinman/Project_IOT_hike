@@ -11,9 +11,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.database.DatabaseReference;
@@ -21,7 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Objects;
 
-public class Sign_up extends AppCompatActivity {
+public class SignUp extends AppCompatActivity {
     private DatabaseReference dataBase;
     private Button createAccountButton;
     private Button backToLogInButton;
@@ -65,18 +62,18 @@ public class Sign_up extends AppCompatActivity {
             userName = String.valueOf(userNameEditText.getText());
             Boolean rememberMe = rememberMeCheckBox.isChecked();
             if(TextUtils.isEmpty(email)){
-                Toast.makeText(Sign_up.this, "Enter Email", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUp.this, "Enter Email", Toast.LENGTH_SHORT).show();
                 return;
             }
             if(TextUtils.isEmpty(password)){
-                Toast.makeText(Sign_up.this, "Enter password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUp.this, "Enter password", Toast.LENGTH_SHORT).show();
                 return;
             }
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(Sign_up.this, "Account created.",
+                            Toast.makeText(SignUp.this, "Account created.",
                                     Toast.LENGTH_SHORT).show();
                             writeNewUser(Objects.requireNonNull(task.getResult().getUser()).getUid(), userName, email, rememberMe);
                             Intent intent = new Intent(getApplicationContext(), LogIn.class);
@@ -86,7 +83,7 @@ public class Sign_up extends AppCompatActivity {
                             // If sign in fails, display a message to the user.
                             FirebaseAuthException e = (FirebaseAuthException )task.getException();
                             Log.e("LoginActivity", "Failed Registration", e);
-                            Toast.makeText(Sign_up.this, "Authentication failed.",
+                            Toast.makeText(SignUp.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     });

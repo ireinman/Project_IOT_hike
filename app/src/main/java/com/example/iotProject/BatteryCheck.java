@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-//מחלקת עזר בשביל ההתראה על סוללה חלשה
 public class BatteryCheck extends BroadcastReceiver {
     static boolean notify = true;
 

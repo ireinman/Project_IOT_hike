@@ -31,19 +31,14 @@
             android:name=".Settings"
             android:exported="false" />
         <activity
-            android:name=".Home_screen"
+            android:name=".HomeScreen"
             android:exported="false" />
         <activity
-            android:name=".Sign_up"
+            android:name=".SignUp"
             android:exported="false" />
         <activity
-            android:name=".Log_in"
+            android:name=".LogIn"
             android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".InTraining"
@@ -51,11 +46,15 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name=".PreviousWorkouts"
-            android:exported="true"/>
+        <activity android:name=".PreviousWorkouts" android:exported="true"/>
         <activity android:name=".NewWorkout" android:exported="true"/>
-        <activity android:name=".AcheivementsScreen" android:exported="true"/>
+        <activity android:name=".AchievementsScreen" android:exported="true"/>
         <activity android:name=".LeaderBoardsScreen" android:exported="true"/>
 
         <service android:name=".SerialService" />

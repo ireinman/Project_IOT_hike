@@ -12,7 +12,6 @@ import android.os.PowerManager;
 public class MusicService extends Service{
 
     private MediaPlayer player; //media player
-
     private final IBinder musicBind = new MusicBinder();//music binder
 
     @Override

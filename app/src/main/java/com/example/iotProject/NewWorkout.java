@@ -25,75 +25,67 @@ public class NewWorkout extends AppCompatActivity {
         setContentView(R.layout.new_workout_activity);
         Button goBack = findViewById(R.id.goBackButton);
         buildDialog();
-        goBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), TrainSettings.class);
-                startActivity(intent);
-                finish();
-            }
+        goBack.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), TrainSettings.class);
+            startActivity(intent);
+            finish();
         });
         CardView beginnerCard = findViewById(R.id.begginerWorkoutButton);
-        beginnerCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tp = new TrainingPlan("Beginner Workout", 3, 10);
-                goInTraining();
-            }
+        beginnerCard.setOnClickListener(v -> {
+            tp = new TrainingPlan("Beginner Workout", 3, 10);
+            goInTraining();
         });
         CardView intermediateCard = findViewById(R.id.intermediateWorkoutButton);
-        intermediateCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tp = new TrainingPlan("intermediate Workout", 5, 15);
-                goInTraining();
-            }
+        intermediateCard.setOnClickListener(v -> {
+            tp = new TrainingPlan("intermediate Workout", 5, 15);
+            goInTraining();
         });
         CardView advancedCard = findViewById(R.id.advancedWorkoutButton);
-        advancedCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tp = new TrainingPlan("advanced Workout", 5, 15);
-                goInTraining();
-            }
+        advancedCard.setOnClickListener(v -> {
+            tp = new TrainingPlan("advanced Workout", 5, 15);
+            goInTraining();
         });
 
         CardView customCard = findViewById(R.id.customWorkoutButton);
-        customCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.show();
-            }
-        });
+        customCard.setOnClickListener(v -> buildDialog());
     }
     private void buildDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        View view = getLayoutInflater().inflate(R.layout.custom_training_dialog, null);
+//
+//        final EditText setsText = view.findViewById(R.id.setsEdit);
+//        final EditText repsText = view.findViewById(R.id.repsEdit);
+//        final EditText name = view.findViewById(R.id.nameEdit);
+//
+//        builder.setView(view);
+//        builder.setTitle("Custom Training")
+//                .setPositiveButton("OK", (dialog, which) -> {
+//                    tp = new TrainingPlan(name.getText().toString(),
+//                            Integer.parseInt(setsText.getText().toString()),
+//                            Integer.parseInt(repsText.getText().toString()));
+//                    writeTPToDataBase();
+//                    goInTraining();
+//                })
+//                .setNegativeButton("Cancel", null);
+//
+//        dialog = builder.create();
         View view = getLayoutInflater().inflate(R.layout.custom_training_dialog, null);
-
         final EditText setsText = view.findViewById(R.id.setsEdit);
         final EditText repsText = view.findViewById(R.id.repsEdit);
         final EditText name = view.findViewById(R.id.nameEdit);
-
-        builder.setView(view);
-        builder.setTitle("Custom Training")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        tp = new TrainingPlan(name.getText().toString(),
-                                Integer.parseInt(setsText.getText().toString()),
-                                Integer.parseInt(repsText.getText().toString()));
-                        writeTPToDataBase();
-                        goInTraining();
-                    }
+        android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(NewWorkout.this)
+                .setView(view)
+                .setMessage("Custom Training")
+                .setNegativeButton("OK", (dialogInterface, i) -> {
+                    tp = new TrainingPlan(name.getText().toString(),
+                            Integer.parseInt(setsText.getText().toString()),
+                            Integer.parseInt(repsText.getText().toString()));
+                    writeTPToDataBase();
+                    goInTraining();
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-        dialog = builder.create();
+                .setPositiveButton("Cancel", null)
+                .create();
+        dialog.show();
     }
     private void goInTraining(){
         Intent intent = new Intent(getApplicationContext(), InTraining.class);

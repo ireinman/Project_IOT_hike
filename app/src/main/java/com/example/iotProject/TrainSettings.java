@@ -5,7 +5,6 @@ import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 public class TrainSettings extends AppCompatActivity {
@@ -29,7 +28,7 @@ public class TrainSettings extends AppCompatActivity {
             finish();
         });
         goBackButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), Home_screen.class);
+            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
             startActivity(intent);
             finish();
         });

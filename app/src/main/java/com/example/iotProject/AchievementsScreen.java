@@ -39,7 +39,7 @@ public class AchievementsScreen extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 Intent intent = new Intent(getApplicationContext(), Progress.class);

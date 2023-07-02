@@ -40,14 +40,14 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
             72, 77, 83, 92, 95, 101, 106, 112, 118, 124, 130, 136, 142, 149,
             154, 160, 167, 174, 178, 184, 190, 196, 203, 207};
     private int checkIndex = 0;
-    String msg, textTime;
-    final String startText = "0:00";
+    private String msg, textTime;
+    private final String startText = "0:00";
 
-    ArrayList<Entry> data = new ArrayList<>();
-    MediaPlayer player;
-    ProgressBar progressBar;
-    TextView progressTextView;
-    ImageView imageView;
+    private ArrayList<Entry> data = new ArrayList<>();
+    private MediaPlayer player;
+    private ProgressBar progressBar;
+    private TextView progressTextView;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
