@@ -96,7 +96,7 @@ public class NewWorkout extends AppCompatActivity {
         dialog = builder.create();
     }
     private void goInTraining(){
-        Intent intent = new Intent(getApplicationContext(), In_Training.class);
+        Intent intent = new Intent(getApplicationContext(), InTraining.class);
         intent.putExtra("trainingPlan", tp);
         startActivity(intent);
         finish();

@@ -46,7 +46,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".In_Training"
+            android:name=".InTraining"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

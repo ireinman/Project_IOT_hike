@@ -17,6 +17,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -45,11 +46,14 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     MediaPlayer player;
     ProgressBar progressBar;
     TextView progressTextView;
+    ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bring_up);
+        imageView = findViewById(R.id.imageView);
+        imageView.setImageResource(R.drawable.pushup);
         deviceAddress = MainActivity.deviceAddress;
         Button startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(view -> startTraining());

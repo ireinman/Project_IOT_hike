@@ -23,7 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class AcheivementsScreen extends AppCompatActivity {
+public class AchievementsScreen extends AppCompatActivity {
     private DatabaseReference dataBase;
     private FirebaseUser currentUser;
     private LinearLayout cardsLayout;
@@ -33,13 +33,10 @@ public class AcheivementsScreen extends AppCompatActivity {
         setContentView(R.layout.activity_acheivements);
         cardsLayout = findViewById(R.id.card_layout);
         Button goBackButton = findViewById(R.id.goBackButton);
-        goBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), Progress.class);
-                startActivity(intent);
-                finish();
-            }
+        goBackButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), Progress.class);
+            startActivity(intent);
+            finish();
         });
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();

@@ -54,8 +54,9 @@ public class Sign_up extends AppCompatActivity {
         userNameEditText = findViewById(R.id.userNameEditText);
         dataBase = FirebaseDatabase.getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         backToLogInButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), Log_in.class);
+            Intent intent = new Intent(getApplicationContext(), LogIn.class);
             startActivity(intent);
+            finish();
         });
         createAccountButton.setOnClickListener(v -> {
             String email, password, userName;
@@ -78,7 +79,7 @@ public class Sign_up extends AppCompatActivity {
                             Toast.makeText(Sign_up.this, "Account created.",
                                     Toast.LENGTH_SHORT).show();
                             writeNewUser(Objects.requireNonNull(task.getResult().getUser()).getUid(), userName, email, rememberMe);
-                            Intent intent = new Intent(getApplicationContext(), Log_in.class);
+                            Intent intent = new Intent(getApplicationContext(), LogIn.class);
                             startActivity(intent);
                             finish();
                         } else {

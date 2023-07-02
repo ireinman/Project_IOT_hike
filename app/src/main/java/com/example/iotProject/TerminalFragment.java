@@ -482,7 +482,6 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
             row = new String[]{"ACTIVITY TYPE:","Walking", "", ""};
             csvWriter.writeNext(row);
 
-            // TODO: change number saved
             row = new String[]{"ESTIMATE STEPS:", estimated_steps.getText().toString(), "", ""};
             csvWriter.writeNext(row);
 

@@ -28,7 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Objects;
 
-public class Log_in extends AppCompatActivity {
+public class LogIn extends AppCompatActivity {
 
     private DatabaseReference dataBase;
     FirebaseUser currentUser;
@@ -64,11 +64,11 @@ public class Log_in extends AppCompatActivity {
             email = String.valueOf(emailEditText.getText());
             password = String.valueOf(passwordEditText.getText());
             if(TextUtils.isEmpty(email)){
-                Toast.makeText(Log_in.this, "Enter Email", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LogIn.this, "Enter Email", Toast.LENGTH_SHORT).show();
                 return;
             }
             if(TextUtils.isEmpty(password)){
-                Toast.makeText(Log_in.this, "Enter password", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LogIn.this, "Enter password", Toast.LENGTH_SHORT).show();
                 return;
             }
             mAuth.signInWithEmailAndPassword(email, password)
@@ -82,7 +82,7 @@ public class Log_in extends AppCompatActivity {
                             finish();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(Log_in.this, "Authentication failed.",
+                            Toast.makeText(LogIn.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     });

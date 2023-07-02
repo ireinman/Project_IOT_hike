@@ -14,22 +14,16 @@ public class Progress extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_progress);
         CardView goBackButton = findViewById(R.id.goBackButton);
-        goBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), Home_screen.class);
-                startActivity(intent);
-                finish();
-            }
+        goBackButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), Home_screen.class);
+            startActivity(intent);
+            finish();
         });
         CardView goAcheivementsButton = findViewById(R.id.AchievementsButton);
-        goAcheivementsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), AcheivementsScreen.class);
-                startActivity(intent);
-                finish();
-            }
+        goAcheivementsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), AcheivementsScreen.class);
+            startActivity(intent);
+            finish();
         });
         CardView goStatisticsButton = findViewById(R.id.statisticsButton);
         goStatisticsButton.setOnClickListener(new View.OnClickListener() {

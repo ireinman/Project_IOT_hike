@@ -25,7 +25,7 @@ import com.github.mikephil.charting.data.Entry;
 
 import java.util.ArrayList;
 
-public class In_Training extends AppCompatActivity implements ServiceConnection, SerialListener {
+public class InTraining extends AppCompatActivity implements ServiceConnection, SerialListener {
 
     private enum Connected { False, Pending, True }
     private String deviceAddress;
@@ -34,39 +34,41 @@ public class In_Training extends AppCompatActivity implements ServiceConnection,
     private boolean initialStart = true;
 
     private boolean inTrain = false, music_on = false;
+    private int setsCounter = 0, repsCounter = 0;
     private float lastTime = 0, startTime = -1;
-    private String msg;
+    private String msg, progressText;
 
-    private ArrayList<Entry> data;
+    private ArrayList<Entry> data = new ArrayList<>();
     private MediaPlayer player;
     private TrainingPlan plan;
     private ImageView imageView;
 
-    private int progress;
     private ProgressBar progressBar;
     private TextView progressTextView, setsTextView;
-    private String progressText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_in_training);
         imageView = findViewById(R.id.imageView);
+        imageView.setImageResource(R.drawable.pushup);
         deviceAddress = MainActivity.deviceAddress;
         Button startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(view -> startTraining());
         Button stopButton = findViewById(R.id.stopButton);
-        stopButton.setOnClickListener(view -> stopTraining(2));
+        stopButton.setOnClickListener(view -> stopTraining(false));
         player = MediaPlayer.create(this, R.raw.bring_sally_up);
-        setsTextView = findViewById(R.id.setsTextView);
-        progressTextView = findViewById(R.id.progressTextView);
+        plan = (TrainingPlan) getIntent().getSerializableExtra("trainingPlan");
+
+        TextView trainingNameTextView = findViewById(R.id.trainingNameTextView);
+        trainingNameTextView.setText(plan.getTrainingName());
         progressBar = findViewById(R.id.progressBar);
-        progress = progressBar.getProgress();
-        progressText = "Set " + progress + " out of " + progressBar.getMax();
-        progressTextView.setText(progressText);
-        // TODO couple sets and initialize data to array [num_sets]
-        // TODO set max progress bar max;
-        // TODO set sets counter
+        progressBar.setMax(plan.reps);
+        setsTextView = findViewById(R.id.setsTextView);
+        progressText = "Set " + 0 + " out of " + plan.setsAmount;
+        setsTextView.setText(progressText);
+        progressTextView = findViewById(R.id.progressTextView);
+        progressTextView.setText("");
 
     }
 
@@ -81,29 +83,43 @@ public class In_Training extends AppCompatActivity implements ServiceConnection,
         inTrain = true;
     }
 
-    private void stopTraining(int reason) {
+    private void stopTraining(boolean finished) {
+        // 0: training end, 2: the user quited
         if (inTrain){
-            // TODO update set count setsTextView
-            progressTextView.setText("");
-            // 0: training end, 1: the user wasn't down when he should, 2: the user quited
-            // TODO: calc train stats and create a dialog - home screen and progress
+            if (finished){
+                progressBar.setProgress(0);
+                progressTextView.setText("");
+                setsCounter++;
+                progressText = "Set " + setsCounter + " out of " + plan.setsAmount;
+                setsTextView.setText(progressText);
+                if (setsCounter == plan.setsAmount){
+                    // TODO: calc train stats and create a dialog - home screen and progress
+                }
+            }
+            else {
+                // TODO: calc train stats and create a dialog - home screen and progress
+            }
         }
         inTrain = false;
     }
 
     private void update_progress(){
-        progress += 1;
-        progressBar.setProgress(progress);
-        progressText = "Set " + progress + " out of " + progressBar.getMax();
+        repsCounter = 2;
+        if (repsCounter >= plan.reps)
+            stopTraining(true);
+        progressBar.setProgress(repsCounter);
+        int required = plan.reps - repsCounter;
+        progressText = required + "more push ups";
         progressTextView.setText(progressText);
     }
 
     private int checkState() {
         // TODO: 0 if up 1 if down
-//        if (state == 0)
-//            imageView.setImageResource(R.drawable.pushup);
-//        else
-//            imageView.setImageResource(R.drawable.pushdown);
+        int state = 1;
+        if (state == 0)
+            imageView.setImageResource(R.drawable.pushup);
+        else
+            imageView.setImageResource(R.drawable.pushdown);
         return 1;
     }
 
@@ -124,7 +140,8 @@ public class In_Training extends AppCompatActivity implements ServiceConnection,
             startTime = Float.parseFloat(parts[0]);
         if (Float.parseFloat(parts[0]) <= 5){
             int realTime = 5 - (int)(Float.parseFloat(parts[0]) - startTime);
-            progressTextView.setText(realTime);
+            progressText = "The set start in " + realTime + " seconds";
+            progressTextView.setText(progressText);
             return;
         }
         if (music_on) {
@@ -132,7 +149,7 @@ public class In_Training extends AppCompatActivity implements ServiceConnection,
             player.release();
             music_on = false;
         }
-        // TODO get push ups and update progress bar / stop train (or set)
+        update_progress();
         lastTime = Float.parseFloat(parts[0]) - startTime;
 //        if (lastTime > LENGTH) {
 //            stopTraining(0);
@@ -141,8 +158,6 @@ public class In_Training extends AppCompatActivity implements ServiceConnection,
 //        }
         checkState();
         data.add(new Entry(lastTime,  Float.parseFloat(parts[1])));
-        // TODO update progress
-        progressTextView.setText("");
     }
 
     private String[] clean_str(String[] stringsArr){
