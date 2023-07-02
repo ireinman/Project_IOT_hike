@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
@@ -29,7 +28,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.*;
 //import androidx.annotation.NotNull;
 //import androidx.annotation.Nullable;
 //import androidx.annotation.RequiresApi;
@@ -88,7 +86,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
      * Lifecycle
      */
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         setRetainInstance(true);
@@ -131,7 +129,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     }
 
     @Override
-    public void onAttach(@NonNull Activity activity) {
+    public void onAttach(Activity activity) {
         super.onAttach(activity);
         getActivity().bindService(new Intent(getActivity(), SerialService.class), this, Context.BIND_AUTO_CREATE);
     }
@@ -170,7 +168,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
      * UI
      */
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_terminal, container, false);
         receiveText = view.findViewById(R.id.receive_text);                          // TextView performance decreases with number of spans
         receiveText.setTextColor(getResources().getColor(R.color.colorRecieveText)); // set as default color to reduce number of spans
@@ -202,7 +200,6 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
 
 
         buttonStart.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 if (!workout)
@@ -256,7 +253,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_terminal, menu);
         menu.findItem(R.id.hex).setChecked(hexEnabled);
     }
@@ -413,7 +410,7 @@ public class TerminalFragment extends Fragment implements ServiceConnection, Ser
     }
 
     private void OpenLoadCSV(){
-        Intent intent = new Intent(getContext(), MainActivity.class);
+        Intent intent = new Intent(getContext(), DeviceActivity.class);
         startActivity(intent);
     }
 

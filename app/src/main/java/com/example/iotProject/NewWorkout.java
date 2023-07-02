@@ -24,7 +24,6 @@ public class NewWorkout extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_workout_activity);
         Button goBack = findViewById(R.id.goBackButton);
-        buildDialog();
         goBack.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), TrainSettings.class);
             startActivity(intent);
@@ -88,8 +87,9 @@ public class NewWorkout extends AppCompatActivity {
         dialog.show();
     }
     private void goInTraining(){
-        Intent intent = new Intent(getApplicationContext(), InTraining.class);
+        Intent intent = new Intent(getApplicationContext(), DeviceActivity.class);
         intent.putExtra("trainingPlan", tp);
+        intent.putExtra("type", 0);
         startActivity(intent);
         finish();
     }

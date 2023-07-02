@@ -1,13 +1,10 @@
 package com.example.iotProject;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.ListFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +17,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static com.example.iotProject.MainActivity.deviceAddress;
+import static com.example.iotProject.DeviceActivity.deviceAddress;
 
 public class DevicesFragment extends ListFragment {
 
@@ -28,16 +25,12 @@ public class DevicesFragment extends ListFragment {
     private final ArrayList<BluetoothDevice> listItems = new ArrayList<>();
     private ArrayAdapter<BluetoothDevice> listAdapter;
 
-    @SuppressLint("InlinedApi")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         if (getContext() == null || getActivity() == null)
             return;
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 0);
-        }
         if (getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH))
             bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         listAdapter = new ArrayAdapter<BluetoothDevice>(getActivity(), 0, listItems) {
@@ -113,15 +106,15 @@ public class DevicesFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-//        BluetoothDevice device = listItems.get(position - 1);
-//        Bundle args = new Bundle();
-//        args.putString("device", device.getAddress());
-//        Fragment fragment = new TerminalFragment();
-//        fragment.setArguments(args);
-//        getFragmentManager().beginTransaction().replace(R.id.fragment, fragment, "terminal").addToBackStack(null).commit();
         BluetoothDevice device = listItems.get(position - 1);
         deviceAddress = device.getAddress();
-        Intent intent = new Intent(getContext(), LogIn.class);
+        Intent intent;
+        if (getArguments().getInt("type") == 0) {
+            intent = new Intent(getContext(), InTraining.class);
+            intent.putExtra("trainingPlan", getArguments().getSerializable("trainingPlan"));
+        }
+        else
+            intent = new Intent(getContext(), BringUp.class);
         startActivity(intent);
     }
 

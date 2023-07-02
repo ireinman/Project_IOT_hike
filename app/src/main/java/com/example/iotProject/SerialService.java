@@ -12,8 +12,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import java.io.IOException;
@@ -48,9 +46,7 @@ public class SerialService extends Service implements SerialListener {
     private SerialListener listener;
     private boolean connected;
 
-    /**
-     * Lifecylce
-     */
+
     public SerialService() {
         mainLooper = new Handler(Looper.getMainLooper());
         binder = new SerialBinder();
@@ -65,7 +61,6 @@ public class SerialService extends Service implements SerialListener {
         super.onDestroy();
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return binder;

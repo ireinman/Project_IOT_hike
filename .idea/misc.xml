@@ -1,7 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/drawable/custom_progress_bg.xml" value="0.172" />
         <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/drawable/rounded_corners.xml" value="0.151" />
         <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/layout/achievement_card.xml" value="0.16302083333333334" />
         <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/layout/activity_acheivements.xml" value="0.16302083333333334" />
@@ -20,7 +22,10 @@
         <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/layout/device_list_header.xml" value="0.25" />
         <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/layout/device_list_item.xml" value="0.25" />
         <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/layout/fragment_terminal.xml" value="0.25" />
+        <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/layout/new_workout_activity.xml" value="0.25" />
+        <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/layout/prveious_workouts_activity.xml" value="0.25" />
         <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/layout/training_card.xml" value="0.1640625" />
+        <entry key="..\:/Users/irein/Documents/AndroidStudioProjects/iotProject/app/src/main/res/layout/workout_card.xml" value="0.25" />
         <entry key="..\:/Users/irein/Downloads/Tutorial7/app/src/main/res/layout/activity_load_csv.xml" value="0.171875" />
         <entry key="..\:/Users/irein/Downloads/Tutorial7/app/src/main/res/layout/fragment_terminal.xml" value="0.25" />
         <entry key="..\:/Users/irein/Downloads/Tutorial7/app/src/main/res/layout/spinner_item.xml" value="0.25" />

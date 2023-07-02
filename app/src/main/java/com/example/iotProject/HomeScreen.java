@@ -52,7 +52,8 @@ public class HomeScreen extends AppCompatActivity {
 
         Button bringUpButton = findViewById(R.id.bringUpButton);
         bringUpButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), BringUp.class);
+            Intent intent = new Intent(getApplicationContext(), DeviceActivity.class);
+            intent.putExtra("type", 1);
             startActivity(intent);
             finish();
         });

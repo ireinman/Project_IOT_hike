@@ -80,7 +80,7 @@
             android:max="100"
             android:progress="70"
             android:scaleX="-1"
-            android:progressDrawable="@drawable/custom_progress_bg" />
+            android:progressDrawable="@drawable/custom_progress_bg_black" />
 
     </LinearLayout>
 

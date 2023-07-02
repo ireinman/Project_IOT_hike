@@ -43,7 +43,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     private String msg, textTime;
     private final String startText = "0:00";
 
-    private ArrayList<Entry> data = new ArrayList<>();
+    private final ArrayList<Entry> data = new ArrayList<>();
     private MediaPlayer player;
     private ProgressBar progressBar;
     private TextView progressTextView;
@@ -55,16 +55,17 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         setContentView(R.layout.activity_bring_up);
         imageView = findViewById(R.id.imageView);
         imageView.setImageResource(R.drawable.pushup);
-        deviceAddress = MainActivity.deviceAddress;
+        deviceAddress = DeviceActivity.deviceAddress;
         Button startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(view -> startTraining());
         Button stopButton = findViewById(R.id.stopButton);
         stopButton.setOnClickListener(view -> stopTraining(2));
         player = MediaPlayer.create(this, R.raw.bring_sally_up);
         progressBar = findViewById(R.id.progressBar);
+        progressBar.setProgress(0);
         progressTextView = findViewById(R.id.progressTextView);
         progressTextView.setText(startText);
-        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 stopTraining(2);
@@ -106,23 +107,19 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         if (!inTrain)
             return;
         msg = new String(message);
-        // check message length
-        if (msg.length() <= 0) // ! newline.equals(TextUtil.newline_crlf) ||
+        String[] parts = clean_str(msg);
+        if (parts.length <= 0)
             return;
-        msg = msg.replace(TextUtil.newline_crlf, TextUtil.emptyString);
-        // split message string by ',' char and trim blank spaces
-        String[] parts = clean_str(msg.split(","));
-        // TODO update arduino - only time and y
-        // TODO upgrade speed by scanning all of parts
         if (startTime == -1)
-            startTime = Float.parseFloat(parts[0]);
+            startTime = Float.parseFloat(parts[parts.length - 2]);
+        float lastTime = Float.parseFloat(parts[parts.length - 2]) - startTime;
         int realTime;
-        if (Float.parseFloat(parts[0]) <= 5){
-            realTime = 5 - (int)(Float.parseFloat(parts[0]) - startTime);
-            progressTextView.setText(realTime);
+        if (lastTime <= 5){
+            textTime = Integer.toString(5 - (int)(lastTime));
+            progressTextView.setText(textTime);
             return;
         }
-        float lastTime = Float.parseFloat(parts[0]) - startTime;
+        lastTime = Float.parseFloat(parts[parts.length - 2]) - startTime;
         float LENGTH = 60 * 3 + 30;
         if (lastTime > LENGTH) {
             stopTraining(0);
@@ -137,18 +134,27 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
                 return;
             }
         }
-        data.add(new Entry(lastTime,  Float.parseFloat(parts[1])));
+        for (int i = 0; i < parts.length; i+=2) {
+            data.add(new Entry(Float.parseFloat(parts[i]) - startTime,
+                    Float.parseFloat(parts[i + 1])));
+        }
         progressBar.setProgress((int) (100 * (lastTime - 5) / (LENGTH - 5)));
         realTime = (int)(lastTime - 5);
         textTime = (realTime / 60) + ":" + (realTime % 60);
         progressTextView.setText(textTime);
     }
 
-    private String[] clean_str(String[] stringsArr){
-        for (int i = 0; i < stringsArr.length; i++)  {
-            stringsArr[i]=stringsArr[i].replaceAll(" ","");
+    private String[] clean_str(String msg){
+        msg = msg.replace(TextUtil.newline_crlf, TextUtil.emptyString);
+        String[] stringsArr = msg.replace("  ", ",").split(",");
+        int length = stringsArr.length;
+        if (length % 2 != 0)
+            length--;
+        String[] res = new String[length];
+        for (int i = 0; i < length; i++)  {
+            res[i] = stringsArr[i].replaceAll(" ","");
         }
-        return stringsArr;
+        return res;
     }
 
 
@@ -184,18 +190,6 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         super.onStop();
     }
 
-//    @Override
-//    public void onAttach(@NonNull Activity activity) {
-//        super.onAttach(activity);
-//        getActivity().bindService(new Intent(getActivity(), SerialService.class), this, Context.BIND_AUTO_CREATE);
-//    }
-
-//    @Override
-//    public void onDetach() {
-//        try { unbindService(this); } catch(Exception ignored) {}
-//        super.onDetach();
-//    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -209,7 +203,6 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     public void onServiceConnected(ComponentName name, IBinder binder) {
         service = ((SerialService.SerialBinder) binder).getService();
         service.attach(this);
-//        initialStart && isResumed()
         if(initialStart) {
             initialStart = false;
             runOnUiThread(this::connect);
@@ -253,12 +246,8 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         SpannableStringBuilder spn = new SpannableStringBuilder(str + '\n');
         spn.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorStatusText)),
                 0, spn.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        receiveText.append(spn);
     }
 
-    /*
-     * SerialListener
-     */
     @Override
     public void onSerialConnect() {
         status("connected");
@@ -277,6 +266,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
             receive(data);}
         catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }
     }
 

@@ -52,7 +52,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
         setContentView(R.layout.activity_in_training);
         imageView = findViewById(R.id.imageView);
         imageView.setImageResource(R.drawable.pushup);
-        deviceAddress = MainActivity.deviceAddress;
+        deviceAddress = DeviceActivity.deviceAddress;
         Button startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(view -> startTraining());
         Button stopButton = findViewById(R.id.stopButton);
@@ -109,7 +109,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
             stopTraining(true);
         progressBar.setProgress(repsCounter);
         int required = plan.reps - repsCounter;
-        progressText = required + "more push ups";
+        progressText = required + " more push ups";
         progressTextView.setText(progressText);
     }
 
@@ -131,9 +131,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
         // check message length
         if (msg.length() <= 0) // ! newline.equals(TextUtil.newline_crlf) ||
             return;
-        msg = msg.replace(TextUtil.newline_crlf, TextUtil.emptyString);
-        // split message string by ',' char and trim blank spaces
-        String[] parts = clean_str(msg.split(","));
+        String[] parts = clean_str(msg);
         // TODO update arduino - only time and y
         // TODO upgrade speed by scanning all of parts
         if (startTime == -1)
@@ -160,11 +158,17 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
         data.add(new Entry(lastTime,  Float.parseFloat(parts[1])));
     }
 
-    private String[] clean_str(String[] stringsArr){
-        for (int i = 0; i < stringsArr.length; i++)  {
-            stringsArr[i]=stringsArr[i].replaceAll(" ","");
+    private String[] clean_str(String msg){
+        msg = msg.replace(TextUtil.newline_crlf, TextUtil.emptyString);
+        String[] stringsArr = msg.replace("  ", ",").split(",");
+        int length = stringsArr.length;
+        if (length % 2 != 0)
+            length--;
+        String[] res = new String[length];
+        for (int i = 0; i < length; i++)  {
+            res[i] = stringsArr[i].replaceAll(" ","");
         }
-        return stringsArr;
+        return res;
     }
 
 

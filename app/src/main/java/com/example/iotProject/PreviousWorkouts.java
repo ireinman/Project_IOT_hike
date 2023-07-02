@@ -3,6 +3,7 @@ package com.example.iotProject;
 import static android.content.ContentValues.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -66,7 +67,7 @@ public class PreviousWorkouts extends AppCompatActivity {
                         TrainingPlan trainingPlan = new TrainingPlan(trainingName, setsAmount, reps);
 
                         // Perform any necessary operations with the created TrainingPlan object
-                        addCard(trainingPlan.getTrainingName(), trainingPlan.setsAmount, trainingPlan.reps);
+                        addCard(trainingPlan);
                     }
                 }
 
@@ -79,27 +80,34 @@ public class PreviousWorkouts extends AppCompatActivity {
         }
 
     }
-    private void addCard(String name, int setsAmount, int repsAmount) {
+    private void addCard(TrainingPlan trainingPlan) {
         final View view = getLayoutInflater().inflate(R.layout.training_card, null);
 
         TextView nameView = view.findViewById(R.id.workout_name);
         Button delete = view.findViewById(R.id.delete);
         TextView numSetsText = view.findViewById(R.id.sets_num_view);
         TextView numRepsText = view.findViewById(R.id.reps_num_view);
+        CardView card = view.findViewById(R.id.card_view);
+        card.setOnClickListener(view1 -> {
+            Intent intent = new Intent(getApplicationContext(), DeviceActivity.class);
+            intent.putExtra("trainingPlan", trainingPlan);
+            intent.putExtra("type", 0);
+            startActivity(intent);
+            finish();
+            });
 
-        nameView.setText(name);
-        numSetsText.setText(Integer.toString(setsAmount));
-        numRepsText.setText(Integer.toString(repsAmount));
+        nameView.setText(trainingPlan.getTrainingName());
+        numSetsText.setText(trainingPlan.setsAmount);
+        numRepsText.setText(trainingPlan.reps);
 
 
         delete.setOnClickListener(v -> {
             cardsLayout.removeView(view);
             if (currentUser != null) {
-                dataBase.child("training_plans/" + currentUser.getUid() + "/" + name)
-                        .removeValue();
+                dataBase.child("training_plans/" + currentUser.getUid() + "/" +
+                        trainingPlan.getTrainingName()).removeValue();
             }
         });
-
         cardsLayout.addView(view);
     }
 }
