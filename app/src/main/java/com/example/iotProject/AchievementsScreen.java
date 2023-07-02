@@ -35,14 +35,14 @@ public class AchievementsScreen extends AppCompatActivity {
         cardsLayout = findViewById(R.id.card_layout);
         Button goBackButton = findViewById(R.id.goBackButton);
         goBackButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), Progress.class);
+            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
             startActivity(intent);
             finish();
         });
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Intent intent = new Intent(getApplicationContext(), Progress.class);
+                Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
                 startActivity(intent);
                 finish();
             }

@@ -49,7 +49,7 @@ public class AdvancedStatistics extends AppCompatActivity {
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
-                Intent intent = new Intent(getApplicationContext(), Progress.class);
+                Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
                 startActivity(intent);
                 finish();
             }

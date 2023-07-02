@@ -30,15 +30,15 @@ public class HomeScreen extends AppCompatActivity {
             finish();
         });
 
-        Button settingsButton = findViewById(R.id.settingsButton);
+        Button settingsButton = findViewById(R.id.statsButton);
         settingsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), Settings.class);
+            Intent intent = new Intent(getApplicationContext(), AdvancedStatistics.class);
             startActivity(intent);
             finish();
         });
-        Button progressButton = findViewById(R.id.progressButton);
+        Button progressButton = findViewById(R.id.achievementsButton);
         progressButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), Progress.class);
+            Intent intent = new Intent(getApplicationContext(), AchievementsScreen.class);
             startActivity(intent);
             finish();
         });
