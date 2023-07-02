@@ -25,8 +25,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.github.mikephil.charting.data.Entry;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 
 import java.util.ArrayList;
 
@@ -37,7 +41,6 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
     private SerialService service;
     private Connected connected = Connected.False;
     private boolean initialStart = true;
-
     private boolean inTrain = false, music_on = false;
     private int setsCounter = 0, repsCounter = 0;
     private float lastTime = 0, startTime = -1;
@@ -107,7 +110,6 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
     }
 
     private void stopTraining(boolean finished) {
-        // 0: training end, 2: the user quited
         if (inTrain){
             if (finished){
                 progressBar.setProgress(0);
@@ -117,6 +119,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
                 setsTextView.setText(progressText);
                 if (setsCounter == plan.setsAmount){
                     // TODO: calc train stats and create a dialog - home screen and progress
+
                 }
             }
             else {
@@ -124,6 +127,50 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
             }
         }
         inTrain = false;
+    }
+
+    private void update_achievements(TrainingSession ts){
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser!=null){
+            String uid = currentUser.getUid();
+            DatabaseReference dataBase = FirebaseDatabase.
+                    getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
+            incrementReference(dataBase.child("achievements/10-push-ups/users/"+uid), ts.totalPushUps);
+            incrementReference(dataBase.child("achievements/100-push-ups/users/"+uid), ts.totalPushUps);
+            incrementReference(dataBase.child("achievements/50-push-ups/users/"+uid), ts.totalPushUps);
+            incrementReference(dataBase.child("achievements/first_training_session/users/"+uid), 1);
+        }
+    }
+
+    private void incrementReference(DatabaseReference dataBase, int inc){
+        dataBase.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                // Get the current value
+                Integer currentValue = mutableData.getValue(Integer.class);
+                if (currentValue == null) {
+                    // Value doesn't exist, set it to 1
+                    mutableData.setValue(1);
+                } else {
+                    // Increment the value by 1
+                    mutableData.setValue(currentValue + inc);
+                }
+
+                // Indicate that the transaction completed successfully
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                if (databaseError != null) {
+                    // Handle the error
+                    System.out.println("Transaction failed. Error: " + databaseError.getMessage());
+                } else {
+                    // Transaction completed successfully
+                    System.out.println("Value incremented successfully");
+                }
+            }
+        });
     }
 
     private void update_progress(){

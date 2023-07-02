@@ -43,6 +43,7 @@ public class TrainingSession {
     public Long getDate(){
         return this.date;
     }
+    public Date getDateObject() { return reverseHash(this.date); }
     public void setDate(Long date) { this.date = date; }
 
     public int totalPushUps;

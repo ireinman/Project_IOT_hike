@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -33,12 +32,11 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Objects;
 
 public class AdvancedStatistics extends AppCompatActivity {
 
     private int mode = 0;
-    private final ArrayList<TrainingSession> trainings = getTraining();
+    private final ArrayList<TrainingSession> trainings = getTrainings();
 
 
 
@@ -115,7 +113,7 @@ public class AdvancedStatistics extends AppCompatActivity {
     }
 
 
-    private ArrayList<TrainingSession> getTraining(){
+    public static ArrayList<TrainingSession> getTrainings(){
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         ArrayList<TrainingSession> result = new ArrayList<TrainingSession>();
         if (currentUser != null) {

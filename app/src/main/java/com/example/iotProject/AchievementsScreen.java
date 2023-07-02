@@ -2,6 +2,7 @@ package com.example.iotProject;
 
 import static android.content.ContentValues.TAG;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +14,7 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
+
 import org.apache.commons.lang3.text.WordUtils;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,7 +23,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+
+import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 public class AchievementsScreen extends AppCompatActivity {
     private DatabaseReference dataBase;
@@ -52,6 +62,7 @@ public class AchievementsScreen extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         dataBase = FirebaseDatabase.getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         if(currentUser != null){
+            updateStreaks();
             DatabaseReference userTrainingReference = dataBase.child("achievements");
             ValueEventListener valueEventListener = new ValueEventListener() {
                 @Override
@@ -70,6 +81,99 @@ public class AchievementsScreen extends AppCompatActivity {
                 }
             };
             userTrainingReference.addListenerForSingleValueEvent(valueEventListener);
+        }
+    }
+    private void updateStreaks(){
+        ArrayList<TrainingSession> trainingSessions = AdvancedStatistics.getTrainings();
+        if(currentUser!=null) {
+            String uid = currentUser.getUid();
+            int bestStreak = calculateHighestStreak(trainingSessions);
+            updateReference(dataBase.child("achievements/7-day-streak/users/"+uid), bestStreak);
+            updateReference(dataBase.child("achievements/30-day-streak/"+uid), bestStreak);
+        }
+    }
+
+    private void updateReference(DatabaseReference dataBase, int maxStreak){
+        dataBase.runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                // Get the current value
+                Integer currentValue = mutableData.getValue(Integer.class);
+                if (currentValue == null) {
+                    // Value doesn't exist, set it to 1
+                    mutableData.setValue(0);
+                } else {
+                    if(currentValue<maxStreak){
+                        mutableData.setValue(maxStreak);
+                    }
+                }
+
+                // Indicate that the transaction completed successfully
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                if (databaseError != null) {
+                    // Handle the error
+                    Log.d(TAG, "Transaction failed. Error: " + databaseError.getMessage());
+                } else {
+                    // Transaction completed successfully
+                    Log.d(TAG,"Value incremented successfully");
+                }
+            }
+        });
+    }
+
+    public int calculateHighestStreak(ArrayList<TrainingSession> trainingSessions) {
+        // Sort the trainingSessions by date
+        Collections.sort(trainingSessions, Comparator.comparing(TrainingSession::getDateObject));
+
+        int highestStreak = 0;
+        int currentStreak = 0;
+
+        Date previousDate = null;
+
+        for (TrainingSession session : trainingSessions) {
+            Date currentDate = session.getDateObject();
+
+            if (previousDate == null || isConsecutiveDays(previousDate, currentDate)) {
+                // The current session is part of the streak
+                currentStreak++;
+            } else {
+                // The streak is broken, check if it's the highest streak so far
+                highestStreak = Math.max(highestStreak, currentStreak);
+                currentStreak = 1;
+            }
+
+            previousDate = currentDate;
+        }
+
+        // Check if the last streak is the highest streak
+        highestStreak = Math.max(highestStreak, currentStreak);
+
+        return highestStreak;
+    }
+    private boolean isConsecutiveDays(Date previousDate, Date currentDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String previousDateString = dateFormat.format(previousDate);
+        String currentDateString = dateFormat.format(currentDate);
+
+        long dayDifference = getDayDifference(previousDateString, currentDateString);
+
+        return dayDifference == 1;
+    }
+    private long getDayDifference(String startDate, String endDate) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date start = dateFormat.parse(startDate);
+            Date end = dateFormat.parse(endDate);
+
+            long difference = end.getTime() - start.getTime();
+            return difference / (24 * 60 * 60 * 1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
         }
     }
     private void addCard(String name, int progress, int cap) {
