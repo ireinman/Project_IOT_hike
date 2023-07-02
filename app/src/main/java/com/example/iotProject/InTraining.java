@@ -18,10 +18,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.github.mikephil.charting.data.Entry;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,13 +44,17 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
 
     private boolean inTrain = false, music_on = false;
     private int setsCounter = 0, repsCounter = 0;
-    private float lastTime = 0, startTime = -1;
+    private float startTime = -1;
+    private final float GRAVITY = 9.81f;
     private String msg, progressText;
 
     private ArrayList<Entry> data = new ArrayList<>();
+    private ArrayList<Boolean> isUp = new ArrayList<>();
     private MediaPlayer player;
     private TrainingPlan plan;
     private ImageView imageView;
+    private Python py;
+    private PyObject pyModule;
 
     private ProgressBar progressBar;
     private TextView progressTextView, setsTextView;
@@ -81,6 +89,17 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
             }
         };
         this.getOnBackPressedDispatcher().addCallback(this, callback);
+
+        if (!Python.isStarted()){
+            Python.start(new AndroidPlatform(getApplicationContext()));
+        }
+        py = Python.getInstance();
+        pyModule = py.getModule("aux_functions");
+        int[] arr = {2, 4, 7, 8, 9, 10, 12, 13, 14};
+        int[] arr2 = {7, 4, 7, 18, 14, 10, 12, 13, 14};
+        PyObject obj = pyModule.callAttr("extract_data", arr, arr2, 70).asList().get(0);
+        Toast.makeText(this,obj.toString() + " from python",Toast.LENGTH_LONG).show();
+
 
     }
 
@@ -158,8 +177,11 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
         // TODO update arduino - only time and y
         // TODO upgrade speed by scanning all of parts
         if (startTime == -1)
-            startTime = Float.parseFloat(parts[0]);
-        if (Float.parseFloat(parts[0]) <= 5){
+            startTime = Float.parseFloat(parts[parts.length - 2]);
+        float lastTime = Float.parseFloat(parts[parts.length - 2]) - startTime;
+        if (lastTime < 0)
+            return;
+        if (lastTime <= 5){
             int realTime = 5 - (int)(Float.parseFloat(parts[0]) - startTime);
             progressText = "The set start in " + realTime + " seconds";
             progressTextView.setText(progressText);
@@ -170,15 +192,12 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
             player.release();
             music_on = false;
         }
+        for (int i = 0; i < parts.length; i+=2) {
+            data.add(new Entry(Float.parseFloat(parts[i]) - startTime,
+                    Float.parseFloat(parts[i + 1]) - GRAVITY));
+        }
         update_progress();
-        lastTime = Float.parseFloat(parts[0]) - startTime;
-//        if (lastTime > LENGTH) {
-//            stopTraining(0);
-//            progressBar.setProgress(100);
-//            return;
-//        }
         checkState();
-        data.add(new Entry(lastTime,  Float.parseFloat(parts[1])));
     }
 
     private String[] clean_str(String msg){
