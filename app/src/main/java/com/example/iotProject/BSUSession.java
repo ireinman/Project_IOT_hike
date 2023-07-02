@@ -2,7 +2,7 @@ package com.example.iotProject;
 
 import java.util.Date;
 
-public class TrainingSession {
+public class BSUSession {
     private static final long BASE = 31; // A prime number
     private static final long MOD = 1000000007; // A large prime number
     public static long hash(Date date) {
@@ -29,14 +29,11 @@ public class TrainingSession {
 
         return new Date(timestamp);
     }
-    public TrainingSession(){}
+    public BSUSession(){}
 
-    public TrainingSession(int totalPushUps, String trainingName, int totalSets, float explosiveness, float avgPushUpTime, float rangeOfMotion, Date date) {
-        this.totalPushUps = totalPushUps;
-        this.trainingName = trainingName;
-        this.totalSets = totalSets;
+    public BSUSession(int totalPushUps, TrainingPlan trainingPlan, int totalSets, float explosiveness, float avgPushUpTime, float rangeOfMotion, Date date) {
+        this.totalTime = totalSets;
         this.explosiveness = explosiveness;
-        this.avgPushUpTime = avgPushUpTime;
         this.rangeOfMotion = rangeOfMotion;
         this.date = hash(date);
     }
@@ -44,13 +41,9 @@ public class TrainingSession {
     public Long getDate(){
         return this.date;
     }
-    public void setDate(Long date) { this.date = date; }
 
-    public int totalPushUps;
-    public String trainingName;
-    public int totalSets;
+    public float totalTime;
     public float explosiveness;
-    public float avgPushUpTime;
     public float rangeOfMotion;
     private Long date;
 }

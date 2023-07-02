@@ -1,12 +1,17 @@
 package com.example.iotProject;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -17,15 +22,23 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 public class AdvancedStatistics extends AppCompatActivity {
 
     private int mode = 0;
-    private final TrainingSession[] trainings = getTraining();
+    private final ArrayList<TrainingSession> trainings = getTraining();
 
 
 
@@ -62,8 +75,10 @@ public class AdvancedStatistics extends AppCompatActivity {
     private void setAmountPushUp(){
         LineChart amountLineChart = (LineChart) findViewById(R.id.lineChartAmount);
         ArrayList<Entry> amounts = new ArrayList<>();
-        for (int i = 0; i < trainings.length; i++){
-            amounts.add(new Entry(i, trainings[i].totalPushUps));
+        int i = 0;
+        for (TrainingSession ts: trainings){
+            amounts.add(new Entry(i, ts.totalPushUps));
+            i++;
         }
         LineDataSet amountDataSet =  new LineDataSet(amounts, "Number Of Push Ups");
         amountDataSet.setColor(Color.RED);
@@ -81,8 +96,8 @@ public class AdvancedStatistics extends AppCompatActivity {
         BarChart trainingTimeChart = (BarChart) findViewById(R.id.barChartTrainingsTime);
         ArrayList<BarEntry> hours = new ArrayList<>();
         Date temp;
-        for (int i = 0; i < trainings.length; i++){
-            temp = trainings[i].date;
+        for (TrainingSession ts: trainings){
+            temp = TrainingSession.reverseHash(ts.getDate());
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(temp);
             hours.add(new BarEntry(calendar.get(Calendar.HOUR_OF_DAY), 1));
@@ -100,8 +115,35 @@ public class AdvancedStatistics extends AppCompatActivity {
     }
 
 
-    private TrainingSession[] getTraining(){
-        // TODO sort by time
-        return null;
+    private ArrayList<TrainingSession> getTraining(){
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        ArrayList<TrainingSession> result = new ArrayList<TrainingSession>();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            DatabaseReference dataBase = FirebaseDatabase.
+                    getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
+                    getReference("training_sessions/" + uid);
+            dataBase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                        Long date = Long.valueOf(childSnapshot.getKey());
+                        TrainingSession current = childSnapshot.getValue(TrainingSession.class);
+                        try {
+                            current.setDate(date);
+                            result.add(current);
+                        } catch (Exception e) {
+                            Log.e(TAG, "can't get data");
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.w(TAG, "loadPost:onCancelled", error.toException());
+                }
+            });
+        }
+        return result;
     }
 }

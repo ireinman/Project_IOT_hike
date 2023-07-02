@@ -22,6 +22,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.data.Entry;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -70,6 +74,17 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
         progressTextView = findViewById(R.id.progressTextView);
         progressTextView.setText("");
 
+    }
+
+    private void writeSession(TrainingSession ts){
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser!=null){
+            String uid = currentUser.getUid();
+            DatabaseReference dataBase = FirebaseDatabase.
+                    getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
+                    getReference("training_sessions/"+uid+"/"+ts.getDate());
+            dataBase.setValue(ts);
+        }
     }
 
     private void startTraining(){
