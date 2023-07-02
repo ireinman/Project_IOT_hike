@@ -33,12 +33,12 @@ public class Sign_up extends AppCompatActivity {
 
     private void writeNewUser(String userId, String name, String email, Boolean rememberMe) {
         MyUser user = new MyUser(name, email, rememberMe, userId);
-        dataBase.child("achievements").child("10-push-ups").child(userId).setValue(0);
-        dataBase.child("achievements").child("50-push-ups").child(userId).setValue(0);
-        dataBase.child("achievements").child("100-push-ups").child(userId).setValue(0);
-        dataBase.child("achievements").child("7-day-streak").child(userId).setValue(0);
-        dataBase.child("achievements").child("30-day-streak").child(userId).setValue(0);
-        dataBase.child("achievements").child("first_training_session").child(userId).setValue(0);
+        dataBase.child("achievements/10-push-ups/users").child(userId).setValue(0);
+        dataBase.child("achievements/50-push-ups/users").child(userId).setValue(0);
+        dataBase.child("achievements/100-push-ups/users").child(userId).setValue(0);
+        dataBase.child("achievements/7-day-streak/users").child(userId).setValue(0);
+        dataBase.child("achievements/30-day-streak/users").child(userId).setValue(0);
+        dataBase.child("achievements/first_training_session/users").child(userId).setValue(0);
         dataBase.child("users").child(userId).setValue(user);
     }
     @Override
