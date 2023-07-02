@@ -37,7 +37,6 @@ public class TrainingSession {
         this.totalSets = totalSets;
         this.explosiveness = explosiveness;
         this.avgPushUpTime = avgPushUpTime;
-        this.rangeOfMotion = rangeOfMotion;
         this.date = hash(date);
     }
 
@@ -51,6 +50,5 @@ public class TrainingSession {
     public int totalSets;
     public float explosiveness;
     public float avgPushUpTime;
-    public float rangeOfMotion;
     private Long date;
 }
