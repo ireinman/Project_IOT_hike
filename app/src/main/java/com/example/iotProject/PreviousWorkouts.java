@@ -92,14 +92,11 @@ public class PreviousWorkouts extends AppCompatActivity {
         numRepsText.setText(Integer.toString(repsAmount));
 
 
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cardsLayout.removeView(view);
-                if (currentUser != null) {
-                    dataBase.child("training_plans/" + currentUser.getUid() + "/" + name)
-                            .removeValue();
-                }
+        delete.setOnClickListener(v -> {
+            cardsLayout.removeView(view);
+            if (currentUser != null) {
+                dataBase.child("training_plans/" + currentUser.getUid() + "/" + name)
+                        .removeValue();
             }
         });
 
