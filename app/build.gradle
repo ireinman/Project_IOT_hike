@@ -23,7 +23,7 @@ android {
         python {
             // eyal: /Users/eyaltadmor/opt/anaconda3/bin/python
             // itamar: C:/Program Files (x86)/Microsoft Visual Studio/Shared/Python37_64/python
-            buildPython "/Users/eyaltadmor/opt/anaconda3/bin/python"
+            buildPython "C:/Program Files (x86)/Microsoft Visual Studio/Shared/Python37_64/python"
             pip {
                 install "numpy"
                 install "scipy"

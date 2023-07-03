@@ -42,6 +42,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
 
     private boolean inTrain = false;
     private float startTime = -1;
+    private final float GRAVITY = 9.81f;
     private final float[] checkPoints = {12, 17, 25, 30, 37, 42, 48, 56, 59, 64,
             72, 77, 83, 92, 95, 101, 106, 112, 118, 124, 130, 136, 142, 149,
             154, 160, 167, 174, 178, 184, 190, 196, 203, 207};
@@ -131,6 +132,8 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
             startTime = Float.parseFloat(parts[parts.length - 2]);
         float lastTime = Float.parseFloat(parts[parts.length - 2]) - startTime;
         int realTime;
+        if (lastTime < 0)
+            return;
         if (lastTime <= 5){
             textTime = Integer.toString(5 - (int)(lastTime));
             progressTextView.setText(textTime);
@@ -153,7 +156,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         }
         for (int i = 0; i < parts.length; i+=2) {
             data.add(new Entry(Float.parseFloat(parts[i]) - startTime,
-                    Float.parseFloat(parts[i + 1])));
+                    Float.parseFloat(parts[i + 1]) - GRAVITY));
         }
         progressBar.setProgress((int) (100 * (lastTime - 5) / (LENGTH - 5)));
         realTime = (int)(lastTime - 5);
