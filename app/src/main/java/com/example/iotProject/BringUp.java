@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class BringUp extends AppCompatActivity implements ServiceConnection, SerialListener {
 
@@ -85,7 +86,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
             String uid = currentUser.getUid();
             DatabaseReference dataBase = FirebaseDatabase.
                     getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
-                    getReference("bsu_sessions/"+uid+"/"+bsuSession.getDate());
+                    getReference("bsu_sessions/"+uid+"/"+bsuSession.returnDate());
             dataBase.setValue(bsuSession);
         }
     }

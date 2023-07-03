@@ -31,19 +31,19 @@ public class BSUSession {
     }
     public BSUSession(){}
 
-    public BSUSession(int totalPushUps, TrainingPlan trainingPlan, int totalSets, float explosiveness, float avgPushUpTime, float rangeOfMotion, Date date) {
-        this.totalTime = totalSets;
+    public BSUSession(int totalTime, double explosiveness, double rangeOfMotion, Date date) {
+        this.totalTime = totalTime;
         this.explosiveness = explosiveness;
         this.rangeOfMotion = rangeOfMotion;
         this.date = hash(date);
     }
 
-    public Long getDate(){
+    public Long returnDate(){
         return this.date;
     }
 
-    public float totalTime;
-    public float explosiveness;
-    public float rangeOfMotion;
+    public double totalTime;
+    public double explosiveness;
+    public double rangeOfMotion;
     private Long date;
 }

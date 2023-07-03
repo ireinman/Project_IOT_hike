@@ -2,7 +2,6 @@ package com.example.iotProject;
 
 import static android.content.ContentValues.TAG;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,7 +27,6 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -127,7 +125,7 @@ public class AchievementsScreen extends AppCompatActivity {
 
     public int calculateHighestStreak(ArrayList<TrainingSession> trainingSessions) {
         // Sort the trainingSessions by date
-        Collections.sort(trainingSessions, Comparator.comparing(TrainingSession::getDateObject));
+        Collections.sort(trainingSessions, Comparator.comparing(TrainingSession::revereseDateObject));
 
         int highestStreak = 0;
         int currentStreak = 0;
@@ -135,7 +133,7 @@ public class AchievementsScreen extends AppCompatActivity {
         Date previousDate = null;
 
         for (TrainingSession session : trainingSessions) {
-            Date currentDate = session.getDateObject();
+            Date currentDate = session.revereseDateObject();
 
             if (previousDate == null || isConsecutiveDays(previousDate, currentDate)) {
                 // The current session is part of the streak

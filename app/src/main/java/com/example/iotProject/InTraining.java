@@ -1,5 +1,7 @@
 package com.example.iotProject;
 
+import static android.content.ContentValues.TAG;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
@@ -14,6 +16,7 @@ import android.os.PowerManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -33,6 +36,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class InTraining extends AppCompatActivity implements ServiceConnection, SerialListener {
 
@@ -93,7 +97,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
             String uid = currentUser.getUid();
             DatabaseReference dataBase = FirebaseDatabase.
                     getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
-                    getReference("training_sessions/"+uid+"/"+ts.getDate());
+                    getReference("training_sessions/"+uid+"/"+ts.returnDate());
             dataBase.setValue(ts);
         }
     }

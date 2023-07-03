@@ -40,16 +40,16 @@ public class TrainingSession {
         this.date = hash(date);
     }
 
-    public Long getDate(){
+    public Long returnDate(){
         return this.date;
     }
-    public Date getDateObject() { return reverseHash(this.date); }
+    public Date revereseDateObject() { return reverseHash(this.date); }
     public void setDate(Long date) { this.date = date; }
 
     public int totalPushUps;
     public String trainingName;
     public int totalSets;
-    public float explosiveness;
-    public float avgPushUpTime;
+    public double explosiveness;
+    public double avgPushUpTime;
     private Long date;
 }

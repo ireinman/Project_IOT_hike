@@ -11,6 +11,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -95,7 +98,7 @@ public class AdvancedStatistics extends AppCompatActivity {
         ArrayList<BarEntry> hours = new ArrayList<>();
         Date temp;
         for (TrainingSession ts: trainings){
-            temp = TrainingSession.reverseHash(ts.getDate());
+            temp = TrainingSession.reverseHash(ts.returnDate());
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(temp);
             hours.add(new BarEntry(calendar.get(Calendar.HOUR_OF_DAY), 1));
@@ -127,12 +130,9 @@ public class AdvancedStatistics extends AppCompatActivity {
                     for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                         Long date = Long.valueOf(childSnapshot.getKey());
                         TrainingSession current = childSnapshot.getValue(TrainingSession.class);
-                        try {
-                            current.setDate(date);
-                            result.add(current);
-                        } catch (Exception e) {
-                            Log.e(TAG, "can't get data");
-                        }
+                        Log.d(TAG, "onDataChange: " + String.valueOf(current.avgPushUpTime));
+                        current.setDate(date);
+                        result.add(current);
                     }
                 }
 
@@ -142,6 +142,7 @@ public class AdvancedStatistics extends AppCompatActivity {
                 }
             });
         }
+        Log.d(TAG, "training length: " + String.valueOf(result.size()));
         return result;
     }
 }
