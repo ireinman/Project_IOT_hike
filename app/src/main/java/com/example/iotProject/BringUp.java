@@ -138,7 +138,6 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     @SuppressLint("NewApi")
     private void stopTraining(int reason) {
         // TODO organize
-        // TODO check functions
         Date date = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
         // 0: training end, 1: the user wasn't down when he should, 2: the user quited
         if (inTrain){
