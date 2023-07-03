@@ -71,12 +71,14 @@ public class AdvancedStatistics extends AppCompatActivity {
             }
         });
         switchMode.setChecked(true);
+        setAmountPushUp();
+        setTrainingsTime();
     }
 
     private void setAmountPushUp(){
         LineChart amountLineChart = (LineChart) findViewById(R.id.lineChartAmount);
         ArrayList<Entry> amounts = new ArrayList<>();
-        int i = 0;
+        int i = 1;
         for (TrainingSession ts: trainings){
             amounts.add(new Entry(i, ts.totalPushUps));
             i++;
