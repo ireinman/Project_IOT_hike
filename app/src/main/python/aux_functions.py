@@ -7,6 +7,8 @@ def is_up(times, acc):  # times >= 0, acc = acc - 9.81
     step = 0.24
     max_height = -1.65
     min_height = 1.6
+    if len(times) > len(acc):
+        times = times[:-1]
     # data = np.array([times, acc])
     tck = interpolate.splrep(times, acc, s=0)
     xnew = np.arange(times[0], times[-1], step)
@@ -18,19 +20,26 @@ def is_up(times, acc):  # times >= 0, acc = acc - 9.81
     start_point = 0
     while start_point < len(extreme_points) and extreme_points[start_point] in peaks:
         start_point += 1
-    for i in range(start_point, len(extreme_points) - 1):
+    i = start_point
+    while i <len(extreme_points) - 1:
         if extreme_points[i] in bottoms and extreme_points[i + 1] in peaks:
-            steps += 1
-    return len(extreme_points)
-    if extreme_points[len(extreme_points) - 1] in bottoms:
-        position = 1
+            if ynew[extreme_points[i]] + 2 < ynew[extreme_points[i + 1]]:
+                steps += 1
+            else:
+                del extreme_points[i + 1]
+                i -= 1
+        if extreme_points[i] in peaks and extreme_points[i + 1] in bottoms:
+            if ynew[extreme_points[i]] - 2 < ynew[extreme_points[i + 1]]:
+                del extreme_points[i + 1]
+                i -= 1
+        i += 1
+    if len(extreme_points) > 0 and extreme_points[len(extreme_points) - 1] in bottoms:
+        return [steps, 1]
     else:
-        position = 0
-    return [steps, position]
+        return [steps, 0]
 
 
 def extract_data(times, acc, total_push_ups):
-    # data = np.array([times, acc])
     total_time = times[-1]
     tck = interpolate.splrep(times, acc, s=0)
     xnew = np.arange(times[0], total_time, 0.2)

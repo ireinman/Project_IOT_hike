@@ -31,7 +31,7 @@ public class TrainingSession {
     }
     public TrainingSession(){}
 
-    public TrainingSession(int totalPushUps, String trainingName, int totalSets, float explosiveness, float avgPushUpTime, float rangeOfMotion, Date date) {
+    public TrainingSession(int totalPushUps, String trainingName, int totalSets, float explosiveness, float avgPushUpTime, Date date) {
         this.totalPushUps = totalPushUps;
         this.trainingName = trainingName;
         this.totalSets = totalSets;
@@ -51,4 +51,14 @@ public class TrainingSession {
     public float explosiveness;
     public float avgPushUpTime;
     private Long date;
+
+    @Override
+    public String toString() {
+        return  "Workout Name: " + trainingName + "\n" +
+                "Date: " + reverseHash(date) +
+                "Total Push Ups: " + totalPushUps + "\n" +
+                "Total sets: " + totalSets + "\n" +
+                "Explosiveness: " + explosiveness + "\n" +
+                "Average Push Up Time: " + avgPushUpTime;
+    }
 }

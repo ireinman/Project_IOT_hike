@@ -2,7 +2,6 @@ package com.example.iotProject;
 
 import static android.content.ContentValues.TAG;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -88,7 +86,7 @@ public class NewWorkout extends AppCompatActivity {
     }
 
     private void goInTraining() {
-        Intent intent = new Intent(getApplicationContext(), InTraining.class);
+        Intent intent = new Intent(getApplicationContext(), DeviceActivity.class);
         intent.putExtra("trainingPlan", tp);
         intent.putExtra("type", 0);
         startActivity(intent);
@@ -126,7 +124,7 @@ public class NewWorkout extends AppCompatActivity {
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                public void onCancelled(DatabaseError error) {
                     Log.w(TAG, "loadPost:onCancelled", error.toException());
                 }
             });

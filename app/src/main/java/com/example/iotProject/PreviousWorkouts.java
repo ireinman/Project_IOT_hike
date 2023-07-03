@@ -54,13 +54,10 @@ public class PreviousWorkouts extends AppCompatActivity {
         dataBase = FirebaseDatabase.getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
         goBackButton = findViewById(R.id.goBackButton);
         cardsLayout = findViewById(R.id.card_layout);
-        goBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), TrainSettings.class);
-                startActivity(intent);
-                finish();
-            }
+        goBackButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), TrainSettings.class);
+            startActivity(intent);
+            finish();
         });
         if(currentUser != null){
             DatabaseReference userTrainingReference = dataBase.child("training_plans/"+currentUser.getUid());
