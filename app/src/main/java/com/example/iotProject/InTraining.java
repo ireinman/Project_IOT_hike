@@ -1,9 +1,5 @@
 package com.example.iotProject;
 
-import static android.content.ContentValues.TAG;
-
-import static android.content.ContentValues.TAG;
-
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -20,18 +16,12 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
@@ -43,12 +33,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Date;
 
 public class InTraining extends AppCompatActivity implements ServiceConnection, SerialListener {
 
@@ -60,19 +47,16 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
 
     private boolean inTrain = false, music_on = false, is_up = true;
     private int setsCounter = 0, repsCounter = 0, state;
-    private float startTime = -1, lastTime = 0, maxAcc = -1000, sumPushUpTime = 0;
-    private final float GRAVITY = 9.81f;
-    private boolean inTrain = false, music_on = false;
-    private int setsCounter = 0, repsCounter = 0;
-    private float lastTime = 0, startTime = -1;
-    private String msg, progressText;
+    private float startTime = -1;
+    private float maxAcc = -1000;
+    private float sumPushUpTime = 0;
+    private String progressText;
 
     private final ArrayList<Float> times = new ArrayList<>();
     private final ArrayList<Float> acc = new ArrayList<>();
     private MediaPlayer player;
     private TrainingPlan plan;
     private ImageView imageView;
-    private Python py;
     private PyObject pyModule;
     private Thread thread;
 
@@ -110,29 +94,20 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
         };
         this.getOnBackPressedDispatcher().addCallback(this, callback);
 
-        if (!Python.isStarted()){
+        if (!Python.isStarted()) {
             Python.start(new AndroidPlatform(getApplicationContext()));
         }
-        py = Python.getInstance();
+        Python py = Python.getInstance();
         pyModule = py.getModule("aux_functions");
-
-    private void writeSession(TrainingSession ts){
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(currentUser!=null){
-            String uid = currentUser.getUid();
-            DatabaseReference dataBase = FirebaseDatabase.
-                    getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
-                    getReference("training_sessions/"+uid+"/"+ts.returnDate());
-            dataBase.setValue(ts);
-        }
         thread = new Thread(() -> {
             while (true) {
-                if (times.size() <= 10)
-                    continue;
-                List<PyObject> res = pyModule.callAttr("is_up", times.toArray(), acc.toArray()).asList();
-                repsCounter = res.get(0).toInt();
-                state = res.get(1).toInt();
-                Log.d("checking", "reps: " + repsCounter + " state " + state);
+                // TODO change python?
+                if (acc.size() > 10) {
+                    List<PyObject> res = pyModule.callAttr("is_up", times.toArray(), acc.toArray()).asList();
+                    repsCounter = res.get(0).toInt();
+                    state = res.get(1).toInt();
+                    Log.d("checking", "reps: " + repsCounter + " state " + state);
+                }
             }
         });
     }
@@ -149,7 +124,15 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
     }
 
     private void stopTraining(boolean finished) {
+        // TODO organize
+        // TODO check functions
+        if (music_on){
+            player.stop();
+            player.release();
+            music_on = false;
+        }
         if (inTrain){
+            inTrain = false;
             thread.interrupt();
             if (finished){
                 List<PyObject> res = pyModule.callAttr
@@ -177,11 +160,9 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
                             })
                             .create();
                     dialog.show();
-                    // TODO: calc train stats and create a dialog - home screen and progress
-
                 }
             }
-            else {
+            else if (setsCounter > 0){
                 progressBar.setProgress(0);
                 progressTextView.setText("");
                 TrainingSession ts = new TrainingSession(plan.reps * setsCounter,
@@ -198,15 +179,43 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
                         })
                         .create();
                 dialog.show();
-                Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
-                startActivity(intent);
-                finish();
+            }
+            else {
+                AlertDialog dialog = new AlertDialog.Builder(InTraining.this)
+                        .setTitle("Training isn't complete :(")
+                        .setPositiveButton("Home Screen", (dialogInterface, i) -> {
+                            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+                            startActivity(intent);
+                            finish();
+                        })
+                        .create();
+                dialog.show();
             }
         }
-        inTrain = false;
-        Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
-        startActivity(intent);
-        finish();
+        else if (setsCounter > 0){
+            TrainingSession ts = new TrainingSession(plan.reps * setsCounter,
+                    plan.getTrainingName(), setsCounter, maxAcc, sumPushUpTime / setsCounter
+                    , new Date());
+            writeSession(ts);
+            AlertDialog dialog = new AlertDialog.Builder(InTraining.this)
+                    .setTitle("Training isn't complete :(")
+                    .setMessage(ts.toString())
+                    .setPositiveButton("Home Screen", (dialogInterface, i) -> {
+                        Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .create();
+            dialog.show();
+            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+            startActivity(intent);
+            finish();
+        }
+        else {
+            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void update_achievements(TrainingSession ts){
@@ -275,7 +284,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
     private void receive(byte[] message) {
         if (!inTrain)
             return;
-        msg = new String(message);
+        String msg = new String(message);
         // check message length
         if (msg.length() <= 0)
             return;
@@ -301,10 +310,12 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
         }
         for (int i = 0; i < parts.length; i+=2) {
             times.add(Float.parseFloat(parts[i]) - startTime);
+            float GRAVITY = 9.81f;
             acc.add(Float.parseFloat(parts[i + 1]) - GRAVITY);
         }
         update_progress();
     }
+
 
     private void writeSession(TrainingSession ts){
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -312,9 +323,10 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
             String uid = currentUser.getUid();
             DatabaseReference dataBase = FirebaseDatabase.
                     getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
-                    getReference("training_sessions/"+uid+"/"+ts.getDate());
+                    getReference("training_sessions/"+uid+"/"+ts.returnDate());
             dataBase.setValue(ts);
         }
+        update_achievements(ts);
     }
 
     private String[] clean_str(String msg){

@@ -31,10 +31,9 @@ public class BSUSession {
     }
     public BSUSession(){}
 
-    public BSUSession(int totalTime, double explosiveness, double rangeOfMotion, Date date) {
+    public BSUSession(double totalTime, double explosiveness, Date date) {
         this.totalTime = totalTime;
         this.explosiveness = explosiveness;
-        this.rangeOfMotion = rangeOfMotion;
         this.date = hash(date);
     }
 
@@ -44,6 +43,12 @@ public class BSUSession {
 
     public double totalTime;
     public double explosiveness;
-    public double rangeOfMotion;
     private Long date;
+
+    @Override
+    public String toString() {
+        return  "Date: " + reverseHash(date) +
+                "Total Time: " + totalTime + "\n" +
+                "Explosiveness: " + explosiveness + "\n";
+    }
 }

@@ -1,17 +1,16 @@
 package com.example.iotProject;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.widget.Button;
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // TODO - check parameters and warnings in all the project
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {

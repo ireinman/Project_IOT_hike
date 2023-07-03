@@ -47,3 +47,11 @@ def extract_data(times, acc, total_push_ups):
     max_acc = max(ynew)
     avg_time_per_push_up = total_push_ups / total_time
     return [max_acc, avg_time_per_push_up]
+
+def extract_data_bsu(times, acc):
+    total_time = times[-1]
+    tck = interpolate.splrep(times, acc, s=0)
+    xnew = np.arange(times[0], total_time, 0.2)
+    ynew = interpolate.splev(xnew, tck, der=0)
+    max_acc = max(ynew)
+    return max_acc

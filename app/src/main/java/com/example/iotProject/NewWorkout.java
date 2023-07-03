@@ -75,10 +75,15 @@ public class NewWorkout extends AppCompatActivity {
                 .setView(view)
                 .setMessage("Custom Training")
                 .setNegativeButton("OK", (dialogInterface, i) -> {
-                    tp = new TrainingPlan(name.getText().toString(),
-                            Integer.parseInt(setsText.getText().toString()),
-                            Integer.parseInt(repsText.getText().toString()));
-                    writeIfUnique();
+                    if (name.getText().toString().length() <= 20) {
+                        tp = new TrainingPlan(name.getText().toString(),
+                                Integer.parseInt(setsText.getText().toString()),
+                                Integer.parseInt(repsText.getText().toString()));
+                        writeIfUnique();
+                    }
+                    else
+                        Toast.makeText(NewWorkout.this, "Training name is too long",
+                                Toast.LENGTH_SHORT).show();
                 })
                 .setPositiveButton("Cancel", null)
                 .create();
@@ -117,7 +122,8 @@ public class NewWorkout extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         Toast.makeText(NewWorkout.this, "Training name exists", Toast.LENGTH_SHORT).show();
-                    } else {
+                    }
+                    else {
                         writeTPToDataBase();
                         goInTraining();
                     }

@@ -2,7 +2,7 @@ package com.example.iotProject;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
@@ -17,19 +17,21 @@ import android.os.PowerManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.github.mikephil.charting.data.Entry;
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class BringUp extends AppCompatActivity implements ServiceConnection, SerialListener {
 
@@ -40,21 +42,22 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     private Connected connected = Connected.False;
     private boolean initialStart = true;
 
-    private boolean inTrain = false;
+    private boolean inTrain = false, is_up = true;
     private float startTime = -1;
-    private final float GRAVITY = 9.81f;
     private final float[] checkPoints = {12, 17, 25, 30, 37, 42, 48, 56, 59, 64,
             72, 77, 83, 92, 95, 101, 106, 112, 118, 124, 130, 136, 142, 149,
             154, 160, 167, 174, 178, 184, 190, 196, 203, 207};
-    private int checkIndex = 0;
-    private String msg, textTime;
+    private int checkIndex = 0, state = 0;
     private final String startText = "0:00";
 
-    private final ArrayList<Entry> data = new ArrayList<>();
+    private final ArrayList<Float> times = new ArrayList<>();
+    private final ArrayList<Float> acc = new ArrayList<>();
     private MediaPlayer player;
     private ProgressBar progressBar;
     private TextView progressTextView;
     private ImageView imageView;
+    private PyObject pyModule;
+    private Thread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +82,22 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
             }
         };
         this.getOnBackPressedDispatcher().addCallback(this, callback);
+
+        if (!Python.isStarted()) {
+            Python.start(new AndroidPlatform(getApplicationContext()));
+        }
+        Python py = Python.getInstance();
+        pyModule = py.getModule("aux_functions");
+        thread = new Thread(() -> {
+            while (true) {
+                // TODO change python?
+                if (acc.size() > 10) {
+                    List<PyObject> res = pyModule.callAttr("is_up", times.toArray(), acc.toArray()).asList();
+                    state = res.get(1).toInt();
+                    Log.d("checking", "reps: " + res.get(0).toInt() + " state " + state);
+                }
+            }
+        });
     }
 
     private void writeSession(BSUSession bsuSession){
@@ -103,37 +122,86 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     }
 
     private void stopTraining(int reason) {
+        // TODO organize
+        // TODO check functions
+        // 0: training end, 1: the user wasn't down when he should, 2: the user quited
         if (inTrain){
+            inTrain = false;
             player.stop();
             player.release();
             progressTextView.setText(startText);
-            // 0: training end, 1: the user wasn't down when he should, 2: the user quited
-            // TODO: calc train stats, save to firebase and create a dialog to HomeScreen / progress
+            thread.interrupt();
+            if (reason == 0){
+                float maxAcc = pyModule.callAttr
+                        ("extract_data_bsu", times.toArray(), acc.toArray()).toFloat();
+                BSUSession bsuSession = new BSUSession(times.get(times.size() - 1), maxAcc, new Date());
+                writeSession(bsuSession);
+                AlertDialog dialog = new AlertDialog.Builder(BringUp.this)
+                        .setTitle("Bring Sally Up completed!")
+                        .setMessage(bsuSession.toString())
+                        .setPositiveButton("Home Screen", (dialogInterface, i) -> {
+                            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+                            startActivity(intent);
+                            finish();
+                        })
+                        .create();
+                dialog.show();
+            }
+            else{ // TODO maybe split into cases - quit or cheat
+                // TODO maybe cancel if we can't check it
+                float maxAcc = pyModule.callAttr
+                        ("extract_data_bsu", times.toArray(), acc.toArray()).toFloat();
+                BSUSession bsuSession = new BSUSession(times.get(times.size() - 1), maxAcc, new Date());
+                writeSession(bsuSession);
+                AlertDialog dialog = new AlertDialog.Builder(BringUp.this)
+                        .setTitle("Training isn't complete - good luck in the next time!")
+                        .setMessage(bsuSession.toString())
+                        .setPositiveButton("Home Screen", (dialogInterface, i) -> {
+                            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+                            startActivity(intent);
+                            finish();
+                        })
+                        .create();
+                dialog.show();
+            }
         }
-        inTrain = false;
+        else {
+            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
 
-    private int checkState() {
-        // TODO: 0 if up 1 if down
-        // TODO update picture
-        return 1;
+    private void updateImage() {
+        // 0 if up 1 if down
+        if (state == 0 && !is_up) {
+            imageView.setImageResource(R.drawable.pushup);
+            is_up = true;
+        }
+        else if ((state == 1 && is_up)) {
+            imageView.setImageResource(R.drawable.pushdown);
+            is_up = false;
+        }
     }
 
 
     private void receive(byte[] message) {
         if (!inTrain)
             return;
-        msg = new String(message);
+        String msg = new String(message);
         String[] parts = clean_str(msg);
         if (parts.length <= 0)
             return;
-        if (startTime == -1)
+        if (startTime == -1) {
             startTime = Float.parseFloat(parts[parts.length - 2]);
+            thread.start();
+        }
         float lastTime = Float.parseFloat(parts[parts.length - 2]) - startTime;
         int realTime;
         if (lastTime < 0)
             return;
+        String textTime;
         if (lastTime <= 5){
             textTime = Integer.toString(5 - (int)(lastTime));
             progressTextView.setText(textTime);
@@ -146,22 +214,24 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
             progressBar.setProgress(100);
             return;
         }
-        int state = checkState();
         if (checkIndex < checkPoints.length && checkPoints[checkIndex] <= lastTime){
             checkIndex++;
+            // TODO better checker
             if (state == 0) { // he is up
                 stopTraining(1);
                 return;
             }
         }
         for (int i = 0; i < parts.length; i+=2) {
-            data.add(new Entry(Float.parseFloat(parts[i]) - startTime,
-                    Float.parseFloat(parts[i + 1]) - GRAVITY));
+            times.add(Float.parseFloat(parts[i]) - startTime);
+            float GRAVITY = 9.81f;
+            acc.add(Float.parseFloat(parts[i + 1]) - GRAVITY);
         }
         progressBar.setProgress((int) (100 * (lastTime - 5) / (LENGTH - 5)));
         realTime = (int)(lastTime - 5);
         textTime = (realTime / 60) + ":" + (realTime % 60);
         progressTextView.setText(textTime);
+        updateImage();
     }
 
     private String[] clean_str(String msg){

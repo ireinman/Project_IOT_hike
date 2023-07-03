@@ -39,6 +39,7 @@ public class AdvancedStatistics extends AppCompatActivity {
 
     private int mode = 0;
     private final ArrayList<TrainingSession> trainings = getTrainings();
+    // TODO todo
 
 
 

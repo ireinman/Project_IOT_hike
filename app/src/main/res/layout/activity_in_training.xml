@@ -41,7 +41,7 @@
             android:layout_weight="1"
             android:text="Push Up Training"
             android:gravity="center"
-            android:textSize="35sp"
+            android:textSize="30sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF" />
     </LinearLayout>

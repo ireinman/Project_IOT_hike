@@ -1,7 +1,6 @@
 package com.example.iotProject;
 
-import static android.content.ContentValues.TAG;
-
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,12 +9,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
-
 import org.apache.commons.lang3.text.WordUtils;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,7 +21,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,7 +70,7 @@ public class AchievementsScreen extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                    Log.w("Firebase", "loadPost:onCancelled", databaseError.toException());
                 }
             };
             userTrainingReference.addListenerForSingleValueEvent(valueEventListener);
@@ -114,15 +109,16 @@ public class AchievementsScreen extends AppCompatActivity {
             public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
                 if (databaseError != null) {
                     // Handle the error
-                    Log.d(TAG, "Transaction failed. Error: " + databaseError.getMessage());
+                    Log.d("Firebase", "Transaction failed. Error: " + databaseError.getMessage());
                 } else {
                     // Transaction completed successfully
-                    Log.d(TAG,"Value incremented successfully");
+                    Log.d("Firebase","Value incremented successfully");
                 }
             }
         });
     }
 
+    @SuppressLint("NewApi")
     public int calculateHighestStreak(ArrayList<TrainingSession> trainingSessions) {
         // Sort the trainingSessions by date
         Collections.sort(trainingSessions, Comparator.comparing(TrainingSession::revereseDateObject));
@@ -180,12 +176,11 @@ public class AchievementsScreen extends AppCompatActivity {
         TextView nameView = view.findViewById(R.id.achievementName);
         ProgressBar progressBar = view.findViewById(R.id.progressBar);
         TextView progressText = view.findViewById(R.id.progressText);
-
         nameView.setText(WordUtils.capitalize(name.replace("-", " ")));
         progressBar.setMax(cap);
         progressBar.setProgress(progress);
-        progressText.setText(progress +"/"+cap);
-
+        String text = progress +"/"+cap;
+        progressText.setText(text);
         cardsLayout.addView(view);
     }
 }
