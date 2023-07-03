@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AdvancedStatistics"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/black">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,35 +64,35 @@
                 android:id="@+id/lineChartAmount"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
-                android:background="@color/black" />
+                android:background="@color/white" />
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChartPower"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/black" />
+                android:background="@color/white" />
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/scatterChartPushTime"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/black" />
+                android:background="@color/white" />
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/barChartTrainingsTime"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/black" />
+                android:background="@color/white" />
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/barChartPushSpeed"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/black" />
+                android:background="@color/white" />
 
 
         </LinearLayout>
