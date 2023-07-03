@@ -1,5 +1,6 @@
 package com.example.iotProject;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -33,7 +34,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -122,7 +127,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
         }
         inTrain = true;
     }
-
+    @SuppressLint("NewApi")
     private void stopTraining(boolean finished) {
         // TODO organize
         // TODO check functions
@@ -131,12 +136,13 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
             player.release();
             music_on = false;
         }
+        Date date = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
         if (inTrain){
             inTrain = false;
             thread.interrupt();
             if (finished){
                 List<PyObject> res = pyModule.callAttr
-                        ("extract_data", times.toArray(), acc.toArray(), times.get(times.size() - 1)).asList();
+                        ("extract_data", times.toArray(), acc.toArray(), plan.reps).asList();
                 maxAcc = Math.max(res.get(0).toFloat(), maxAcc);
                 sumPushUpTime += res.get(1).toFloat();
                 progressBar.setProgress(0);
@@ -148,7 +154,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
                 if (setsCounter == plan.setsAmount){
                     TrainingSession ts = new TrainingSession(plan.reps * plan.setsAmount,
                             plan.getTrainingName(), plan.setsAmount, maxAcc, sumPushUpTime / plan.setsAmount
-                            , new Date());
+                            , date);
                     writeSession(ts);
                     AlertDialog dialog = new AlertDialog.Builder(InTraining.this)
                             .setTitle("Training completed!")
@@ -157,8 +163,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
                                 Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
                                 startActivity(intent);
                                 finish();
-                            })
-                            .create();
+                            }).create();
                     dialog.show();
                 }
             }
@@ -167,7 +172,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
                 progressTextView.setText("");
                 TrainingSession ts = new TrainingSession(plan.reps * setsCounter,
                         plan.getTrainingName(), setsCounter, maxAcc, sumPushUpTime / setsCounter
-                        , new Date());
+                        , date);
                 writeSession(ts);
                 AlertDialog dialog = new AlertDialog.Builder(InTraining.this)
                         .setTitle("Training isn't complete :(")
@@ -195,7 +200,7 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
         else if (setsCounter > 0){
             TrainingSession ts = new TrainingSession(plan.reps * setsCounter,
                     plan.getTrainingName(), setsCounter, maxAcc, sumPushUpTime / setsCounter
-                    , new Date());
+                    , date);
             writeSession(ts);
             AlertDialog dialog = new AlertDialog.Builder(InTraining.this)
                     .setTitle("Training isn't complete :(")
@@ -207,9 +212,6 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
                     })
                     .create();
             dialog.show();
-            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
-            startActivity(intent);
-            finish();
         }
         else {
             Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
@@ -263,8 +265,10 @@ public class InTraining extends AppCompatActivity implements ServiceConnection, 
     }
 
     private void update_progress(){
-        if (repsCounter >= plan.reps)
+        if (repsCounter >= plan.reps) {
             stopTraining(true);
+            return;
+        }
         progressBar.setProgress(repsCounter);
         int required = plan.reps - repsCounter;
         progressText = required + " more push ups";

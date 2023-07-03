@@ -179,7 +179,7 @@ public class AchievementsScreen extends AppCompatActivity {
         nameView.setText(WordUtils.capitalize(name.replace("-", " ")));
         progressBar.setMax(cap);
         progressBar.setProgress(progress);
-        String text = progress +"/"+cap;
+        String text = Math.min(progress, cap) +"/"+cap;
         progressText.setText(text);
         cardsLayout.addView(view);
     }

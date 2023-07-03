@@ -2,6 +2,8 @@ package com.example.iotProject;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -29,7 +31,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -44,9 +50,15 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
 
     private boolean inTrain = false, is_up = true;
     private float startTime = -1;
-    private final float[] checkPoints = {12, 17, 25, 30, 37, 42, 48, 56, 59, 64,
-            72, 77, 83, 92, 95, 101, 106, 112, 118, 124, 130, 136, 142, 149,
-            154, 160, 167, 174, 178, 184, 190, 196, 203, 207};
+//    private final float[] checkPoints = {12, 17, 25, 30, 37, 42, 48, 56, 59, 64,
+//            72, 77, 83, 92, 95, 101, 106, 112, 118, 124, 130, 136, 142, 149,
+//            154, 160, 167, 174, 178, 184, 190, 196, 203, 207};
+    private final float[][] intervals = new float[][]{{14, 17}, {19, 22}, {25, 28}, {31, 34},
+            {37, 40}, {43, 46}, {50, 53}, {61, 64}, {67, 70}, {73, 76},
+        {79, 82}, {85, 88}, {97, 100}, {103, 106}, {109, 112}, {115, 118}, {121, 124}, {127, 130}, {133, 136},
+        {139, 142}, {145, 148}, {151, 154}, {157, 160}, {163, 166}, {169, 172}, {175, 178}, {181, 184},
+        {187, 190}, {193, 196}, {198, 201}
+        };
     private int checkIndex = 0, state = 0;
     private final String startText = "0:00";
 
@@ -57,7 +69,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
     private TextView progressTextView;
     private ImageView imageView;
     private PyObject pyModule;
-    private Thread thread;
+//    private Thread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,16 +100,16 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         }
         Python py = Python.getInstance();
         pyModule = py.getModule("aux_functions");
-        thread = new Thread(() -> {
-            while (true) {
-                // TODO change python?
-                if (acc.size() > 10) {
-                    List<PyObject> res = pyModule.callAttr("is_up", times.toArray(), acc.toArray()).asList();
-                    state = res.get(1).toInt();
-                    Log.d("checking", "reps: " + res.get(0).toInt() + " state " + state);
-                }
-            }
-        });
+//        thread = new Thread(() -> {
+//            while (true) {
+//                // TODO change python?
+//                if (acc.size() > 10) {
+//                    List<PyObject> res = pyModule.callAttr("is_up", times.toArray(), acc.toArray()).asList();
+//                    state = res.get(1).toInt();
+//                    Log.d("checking", "reps: " + res.get(0).toInt() + " state " + state);
+//                }
+//            }
+//        });
     }
 
     private void writeSession(BSUSession bsuSession){
@@ -121,20 +133,23 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         inTrain = true;
     }
 
+    @SuppressLint("NewApi")
     private void stopTraining(int reason) {
         // TODO organize
         // TODO check functions
+        Date date = Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
         // 0: training end, 1: the user wasn't down when he should, 2: the user quited
         if (inTrain){
             inTrain = false;
             player.stop();
             player.release();
             progressTextView.setText(startText);
-            thread.interrupt();
+//            thread.interrupt();
             if (reason == 0){
                 float maxAcc = pyModule.callAttr
                         ("extract_data_bsu", times.toArray(), acc.toArray()).toFloat();
-                BSUSession bsuSession = new BSUSession(times.get(times.size() - 1), maxAcc, new Date());
+                BSUSession bsuSession = new BSUSession(times.get(times.size() - 1), maxAcc,
+                        date);
                 writeSession(bsuSession);
                 AlertDialog dialog = new AlertDialog.Builder(BringUp.this)
                         .setTitle("Bring Sally Up completed!")
@@ -151,7 +166,8 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
                 // TODO maybe cancel if we can't check it
                 float maxAcc = pyModule.callAttr
                         ("extract_data_bsu", times.toArray(), acc.toArray()).toFloat();
-                BSUSession bsuSession = new BSUSession(times.get(times.size() - 1), maxAcc, new Date());
+                BSUSession bsuSession = new BSUSession(times.get(times.size() - 1), maxAcc,
+                        date);
                 writeSession(bsuSession);
                 AlertDialog dialog = new AlertDialog.Builder(BringUp.this)
                         .setTitle("Training isn't complete - good luck in the next time!")
@@ -174,12 +190,21 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
 
 
     private void updateImage() {
-        // 0 if up 1 if down
-        if (state == 0 && !is_up) {
+        boolean up = false;
+        float temp = times.get(times.size() - 1);
+        for (float[] interval : intervals) {
+            if (interval[0] <= temp && temp <= interval[1]) {
+                up = true;
+                break;
+            }
+        }
+        if (temp <= 9)
+            up = true;
+        if (up && !is_up) {
             imageView.setImageResource(R.drawable.pushup);
             is_up = true;
         }
-        else if ((state == 1 && is_up)) {
+        else if ((!up && is_up)) {
             imageView.setImageResource(R.drawable.pushdown);
             is_up = false;
         }
@@ -193,10 +218,9 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         String[] parts = clean_str(msg);
         if (parts.length <= 0)
             return;
-        if (startTime == -1) {
+        if (startTime == -1)
             startTime = Float.parseFloat(parts[parts.length - 2]);
-            thread.start();
-        }
+//            thread.start();
         float lastTime = Float.parseFloat(parts[parts.length - 2]) - startTime;
         int realTime;
         if (lastTime < 0)
@@ -214,10 +238,12 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
             progressBar.setProgress(100);
             return;
         }
-        if (checkIndex < checkPoints.length && checkPoints[checkIndex] <= lastTime){
+        if (checkIndex < intervals.length && intervals[checkIndex][1] <= lastTime){
             checkIndex++;
             // TODO better checker
-            if (state == 0) { // he is up
+            boolean up = pyModule.callAttr("bsu_up", times.toArray(), acc.toArray(),
+                    intervals[checkIndex][0], intervals[checkIndex][1]).toBoolean();
+            if (!up) { // he is down
                 stopTraining(1);
                 return;
             }

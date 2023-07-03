@@ -55,3 +55,17 @@ def extract_data_bsu(times, acc):
     ynew = interpolate.splev(xnew, tck, der=0)
     max_acc = max(ynew)
     return max_acc
+
+def bsu_up(times,acc,starting_up,ending_up):
+    data = np.array([times,acc]).T
+    tck = interpolate.splrep(data[:,0], data[:,1], s=0)
+    xnew = np.arange(starting_up, ending_up, 0.2)
+    ynew = interpolate.splev(xnew, tck, der=0)
+    peaks = signal.find_peaks(ynew)[0]
+    bottoms = signal.find_peaks(-ynew)[0]
+    for peak in peaks:
+        for bottom in bottoms:
+            if peak < bottom:
+                if ynew[peak] > ynew[bottom] + 1:
+                    return True
+    return False

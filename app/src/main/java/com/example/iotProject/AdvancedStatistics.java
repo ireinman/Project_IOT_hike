@@ -1,13 +1,12 @@
 package com.example.iotProject;
 
-import static android.content.ContentValues.TAG;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
-
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 
 public class AdvancedStatistics extends AppCompatActivity {
@@ -116,7 +116,7 @@ public class AdvancedStatistics extends AppCompatActivity {
     }
 
 
-    public static ArrayList<TrainingSession> getTrainings(){
+    public static ArrayList<TrainingSession> getTrainings() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         ArrayList<TrainingSession> result = new ArrayList<TrainingSession>();
         if (currentUser != null) {
@@ -128,9 +128,9 @@ public class AdvancedStatistics extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                        Long date = Long.valueOf(childSnapshot.getKey());
+                        String date = String.valueOf(childSnapshot.getKey());
                         TrainingSession current = childSnapshot.getValue(TrainingSession.class);
-                        Log.d(TAG, "onDataChange: " + String.valueOf(current.avgPushUpTime));
+                        Log.d("Firebase", "onDataChange: " + current.avgPushUpTime);
                         current.setDate(date);
                         result.add(current);
                     }
@@ -138,11 +138,14 @@ public class AdvancedStatistics extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(DatabaseError error) {
-                    Log.w(TAG, "loadPost:onCancelled", error.toException());
+                    Log.w("Firebase", "loadPost:onCancelled", error.toException());
                 }
             });
         }
-        Log.d(TAG, "training length: " + String.valueOf(result.size()));
+        Log.d("Firebase", "training length: " + result.size());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            result.sort(Comparator.comparing(TrainingSession::reverseDateObject));
+        }
         return result;
     }
 }
