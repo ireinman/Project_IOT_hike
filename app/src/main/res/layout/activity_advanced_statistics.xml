@@ -72,15 +72,8 @@
                 android:layout_marginTop="20dp"
                 android:background="@color/black" />
 
-            <com.github.mikephil.charting.charts.ScatterChart
+            <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/scatterChartPushTime"
-                android:layout_width="match_parent"
-                android:layout_height="240dp"
-                android:layout_marginTop="20dp"
-                android:background="@color/black" />
-
-            <com.github.mikephil.charting.charts.ScatterChart
-                android:id="@+id/scatterChartQuality"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:layout_marginTop="20dp"

@@ -121,7 +121,7 @@ public class AchievementsScreen extends AppCompatActivity {
     @SuppressLint("NewApi")
     public int calculateHighestStreak(ArrayList<TrainingSession> trainingSessions) {
         // Sort the trainingSessions by date
-        Collections.sort(trainingSessions, Comparator.comparing(TrainingSession::reverseDateObject));
+        trainingSessions.sort(Comparator.comparing(TrainingSession::reverseDateObject));
 
         int highestStreak = 0;
         int currentStreak = 0;
