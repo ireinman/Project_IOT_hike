@@ -57,8 +57,10 @@ def extract_data_bsu(times, acc):
     return max_acc
 
 def bsu_up(times,acc,starting_up,ending_up):
-    data = np.array([times,acc]).T
-    tck = interpolate.splrep(data[:,0], data[:,1], s=0)
+    data = np.array([times, acc]).T
+    condition = np.logical_and(starting_up - 2 <= data[:, 0], data[:, 0] < ending_up)
+    data_sliced = data[condition]
+    tck = interpolate.splrep(data_sliced[:, 0], data_sliced[:, 1], s=0)
     xnew = np.arange(starting_up, ending_up, 0.2)
     ynew = interpolate.splev(xnew, tck, der=0)
     peaks = signal.find_peaks(ynew)[0]
