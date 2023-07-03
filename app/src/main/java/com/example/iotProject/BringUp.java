@@ -24,6 +24,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
@@ -238,20 +240,19 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
             progressBar.setProgress(100);
             return;
         }
-        if (checkIndex < intervals.length && intervals[checkIndex][1] <= lastTime){
-            checkIndex++;
-            // TODO better checker
-            boolean up = pyModule.callAttr("bsu_up", times.toArray(), acc.toArray(),
-                    intervals[checkIndex][0], intervals[checkIndex][1]).toBoolean();
-            if (!up) { // he is down
-                stopTraining(1);
-                return;
-            }
-        }
         for (int i = 0; i < parts.length; i+=2) {
             times.add(Float.parseFloat(parts[i]) - startTime);
             float GRAVITY = 9.81f;
             acc.add(Float.parseFloat(parts[i + 1]) - GRAVITY);
+        }
+        if (times.size() > 10 && checkIndex < intervals.length && intervals[checkIndex][1] <= lastTime){
+            boolean up = pyModule.callAttr("bsu_up", times.toArray(), acc.toArray(),
+                    intervals[checkIndex][0], intervals[checkIndex][1]).toBoolean();
+            checkIndex++;
+            if (!up) { // he is down
+                stopTraining(1);
+                return;
+            }
         }
         progressBar.setProgress((int) (100 * (lastTime - 5) / (LENGTH - 5)));
         realTime = (int)(lastTime - 5);

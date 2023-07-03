@@ -75,7 +75,7 @@ public class BSUSession {
     @Override
     @SuppressLint("NewApi")
     public String toString() {
-        return  "Date: " + date +
+        return  "Date: " + date + "\n" +
                 "Total Time: " + ((float)Math.round(totalTime * 100)) / 100 + "\n" +
                 "Explosiveness: " + ((float)Math.round(explosiveness * 100)) / 100 + "\n";
     }
