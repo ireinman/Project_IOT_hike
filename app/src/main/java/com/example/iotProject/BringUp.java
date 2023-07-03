@@ -125,6 +125,7 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         // TODO organize
         // TODO check functions
         // 0: training end, 1: the user wasn't down when he should, 2: the user quited
+
         if (inTrain){
             inTrain = false;
             player.stop();
