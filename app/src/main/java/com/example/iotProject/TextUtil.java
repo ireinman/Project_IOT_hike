@@ -7,14 +7,11 @@ import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.widget.TextView;
-
-import androidx.annotation.ColorInt;
-
 import java.io.ByteArrayOutputStream;
 
 final class TextUtil {
 
-    @ColorInt static int caretBackground = 0xff666666;
+    static int caretBackground = 0xff666666;
 
     final static String newline_crlf = "\r\n";
     final static String newline_lf = "\n";

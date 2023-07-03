@@ -121,7 +121,7 @@ public class AchievementsScreen extends AppCompatActivity {
     @SuppressLint("NewApi")
     public int calculateHighestStreak(ArrayList<TrainingSession> trainingSessions) {
         // Sort the trainingSessions by date
-        Collections.sort(trainingSessions, Comparator.comparing(TrainingSession::revereseDateObject));
+        Collections.sort(trainingSessions, Comparator.comparing(TrainingSession::reverseDateObject));
 
         int highestStreak = 0;
         int currentStreak = 0;
@@ -129,7 +129,7 @@ public class AchievementsScreen extends AppCompatActivity {
         Date previousDate = null;
 
         for (TrainingSession session : trainingSessions) {
-            Date currentDate = session.revereseDateObject();
+            Date currentDate = session.reverseDateObject();
 
             if (previousDate == null || isConsecutiveDays(previousDate, currentDate)) {
                 // The current session is part of the streak
