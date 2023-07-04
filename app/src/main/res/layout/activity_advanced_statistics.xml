@@ -29,23 +29,23 @@
             android:textColor="#FFFFFF" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:orientation="vertical"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="48dp"-->
+<!--        android:orientation="vertical"-->
+<!--        android:layout_marginHorizontal="20dp"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:gravity="center">-->
 
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:textColor='@color/white'
-            android:id="@+id/switchMode"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:theme="@style/switch_style"
-            android:layout_height="0dp" />
-    </LinearLayout>
+<!--        <androidx.appcompat.widget.SwitchCompat-->
+<!--            android:textColor='@color/white'-->
+<!--            android:id="@+id/switchMode"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:theme="@style/switch_style"-->
+<!--            android:layout_height="0dp" />-->
+<!--    </LinearLayout>-->
 
 
     <ScrollView
@@ -93,6 +93,26 @@
                 android:layout_height="240dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/white" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="20dp">
+                <Button
+                    android:id="@+id/goBackButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:background="@drawable/rounded_corners"
+                    android:gravity="center"
+                    android:text="Go Back"
+                    android:textAllCaps="false"
+                    android:textColor="#000000"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    android:padding="7dp"/>
+            </RelativeLayout>
 
 
         </LinearLayout>

@@ -31,6 +31,7 @@ public class AchievementsScreen extends AppCompatActivity {
     private DatabaseReference dataBase;
     private FirebaseUser currentUser;
     private LinearLayout cardsLayout;
+    private ArrayList<TrainingSession> trainings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +55,65 @@ public class AchievementsScreen extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         dataBase = FirebaseDatabase.getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").getReference();
-        if(currentUser != null){
-            updateStreaks();
+        getTrainings();
+//        if(currentUser != null){
+//            //updateStreaks();
+//            DatabaseReference userTrainingReference = dataBase.child("achievements");
+//            ValueEventListener valueEventListener = new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+//                        String achievementName = childSnapshot.getKey();
+//                        int progress = childSnapshot.child("users/"+currentUser.getUid()).getValue(Integer.class);
+//                        int cap = childSnapshot.child("cap").getValue(Integer.class);
+//                        addCard(achievementName, progress, cap);
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//                    Log.w("Firebase", "loadPost:onCancelled", databaseError.toException());
+//                }
+//            };
+//            userTrainingReference.addListenerForSingleValueEvent(valueEventListener);
+//        }
+    }
+
+    public void getTrainings() {
+        trainings = new ArrayList<TrainingSession>();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            DatabaseReference dataBase = FirebaseDatabase.
+                    getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
+                    getReference("training_sessions/" + uid);
+
+            dataBase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                        String date = String.valueOf(childSnapshot.getKey());
+                        TrainingSession current = childSnapshot.getValue(TrainingSession.class);
+                        Log.d("Firebase", "onDataChange: " + current.avgPushUpTime);
+                        current.setDate(date);
+                        trainings.add(current);
+                    }
+                    updateStreaks();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    Log.w("Firebase", "loadPost:onCancelled", error.toException());
+                }
+            });
+        }
+    }
+
+    private void updateStreaks(){
+        if(currentUser!=null) {
+            String uid = currentUser.getUid();
+            int bestStreak = calculateHighestStreak(trainings);
+            updateReference(dataBase.child("achievements/7-day-streak/users/"+uid), bestStreak);
+            updateReference(dataBase.child("achievements/30-day-streak/"+uid), bestStreak);
             DatabaseReference userTrainingReference = dataBase.child("achievements");
             ValueEventListener valueEventListener = new ValueEventListener() {
                 @Override
@@ -73,16 +131,7 @@ public class AchievementsScreen extends AppCompatActivity {
                     Log.w("Firebase", "loadPost:onCancelled", databaseError.toException());
                 }
             };
-            userTrainingReference.addListenerForSingleValueEvent(valueEventListener);
-        }
-    }
-    private void updateStreaks(){
-        ArrayList<TrainingSession> trainingSessions = AdvancedStatistics.getTrainings();
-        if(currentUser!=null) {
-            String uid = currentUser.getUid();
-            int bestStreak = calculateHighestStreak(trainingSessions);
-            updateReference(dataBase.child("achievements/7-day-streak/users/"+uid), bestStreak);
-            updateReference(dataBase.child("achievements/30-day-streak/"+uid), bestStreak);
+            userTrainingReference.addValueEventListener(valueEventListener);
         }
     }
 
@@ -101,6 +150,7 @@ public class AchievementsScreen extends AppCompatActivity {
                     }
                 }
 
+
                 // Indicate that the transaction completed successfully
                 return Transaction.success(mutableData);
             }
@@ -110,9 +160,6 @@ public class AchievementsScreen extends AppCompatActivity {
                 if (databaseError != null) {
                     // Handle the error
                     Log.d("Firebase", "Transaction failed. Error: " + databaseError.getMessage());
-                } else {
-                    // Transaction completed successfully
-                    Log.d("Firebase","Value incremented successfully");
                 }
             }
         });

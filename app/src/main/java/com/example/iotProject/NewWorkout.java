@@ -103,7 +103,7 @@ public class NewWorkout extends AppCompatActivity {
         if (currentUser != null) {
             String uid = currentUser.getUid();
             DatabaseReference dataBase = FirebaseDatabase.
-                    getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
+                    getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app").
                     getReference("training_plans/" + uid + "/" + tp.getTrainingName());
             dataBase.child("reps").setValue(tp.reps);
             dataBase.child("setsAmount").setValue(tp.setsAmount);

@@ -47,6 +47,12 @@ public class AdvancedStatistics extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_advanced_statistics);
+        Button goBackButton = findViewById(R.id.goBackButton);
+        goBackButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), HomeScreen.class);
+            startActivity(intent);
+            finish();
+        });
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
             public void handleOnBackPressed() {
@@ -56,39 +62,22 @@ public class AdvancedStatistics extends AppCompatActivity {
             }
         };
         this.getOnBackPressedDispatcher().addCallback(this, callback);
-        SwitchCompat switchMode = findViewById(R.id.switchMode);
-        switchMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                mode = 1;
-                switchMode.setText(R.string.push_up_training);
-                // Switch is in the "on" or "checked" position
-                // Perform actions for the "on" state
-            } else {
-                mode = 0;
-                switchMode.setText(R.string.bsu_training);
-                // Switch is in the "off" or "unchecked" position
-                // Perform actions for the "off" state
-            }
-        });
-        switchMode.setChecked(true);
-        trainings = getTrainings();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    synchronized (this){
-                        wait(2000);
-                        setAmountPushUp();
-                        setTrainingsTime();
-                        setSpeed();
-                        setPowerPushUp();
-                        setPushTime();
-                    }
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }).start();
+//        SwitchCompat switchMode = findViewById(R.id.switchMode);
+//        switchMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            if (isChecked) {
+//                mode = 1;
+//                switchMode.setText(R.string.push_up_training);
+//                // Switch is in the "on" or "checked" position
+//                // Perform actions for the "on" state
+//            } else {
+//                mode = 0;
+//                switchMode.setText(R.string.bsu_training);
+//                // Switch is in the "off" or "unchecked" position
+//                // Perform actions for the "off" state
+//            }
+//        });
+//        switchMode.setChecked(true);
+        getTrainings();
     }
 
     public void setAmountPushUp(){
@@ -191,9 +180,9 @@ public class AdvancedStatistics extends AppCompatActivity {
     }
 
 
-    public static ArrayList<TrainingSession> getTrainings() {
+    public void getTrainings() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        ArrayList<TrainingSession> result = new ArrayList<TrainingSession>();
+        trainings = new ArrayList<TrainingSession>();
         if (currentUser != null) {
             String uid = currentUser.getUid();
             DatabaseReference dataBase = FirebaseDatabase.
@@ -208,8 +197,13 @@ public class AdvancedStatistics extends AppCompatActivity {
                         TrainingSession current = childSnapshot.getValue(TrainingSession.class);
                         Log.d("Firebase", "onDataChange: " + current.avgPushUpTime);
                         current.setDate(date);
-                        result.add(current);
+                        trainings.add(current);
                     }
+                    setAmountPushUp();
+                    setTrainingsTime();
+                    setSpeed();
+                    setPowerPushUp();
+                    setPushTime();
                 }
 
                 @Override
@@ -218,10 +212,5 @@ public class AdvancedStatistics extends AppCompatActivity {
                 }
             });
         }
-        Log.d("Firebase", "training length: " + result.size());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            result.sort(Comparator.comparing(TrainingSession::reverseDateObject));
-        }
-        return result;
     }
 }
