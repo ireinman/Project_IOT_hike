@@ -38,7 +38,7 @@ import java.util.Date;
 public class AdvancedStatistics extends AppCompatActivity {
 
     private int mode = 0;
-    private final ArrayList<TrainingSession> trainings = getTrainings();
+    private ArrayList<TrainingSession> trainings;
     // TODO todo
 
 
@@ -71,14 +71,89 @@ public class AdvancedStatistics extends AppCompatActivity {
             }
         });
         switchMode.setChecked(true);
+        trainings = getTrainings();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    synchronized (this){
+                        wait(2000);
+                        setAmountPushUp();
+                        setTrainingsTime();
+                        setSpeed();
+                        setPowerPushUp();
+                        setPushTime();
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
     }
 
-    private void setAmountPushUp(){
+    public void setAmountPushUp(){
         LineChart amountLineChart = (LineChart) findViewById(R.id.lineChartAmount);
         ArrayList<Entry> amounts = new ArrayList<>();
-        int i = 0;
+        int i = 1;
         for (TrainingSession ts: trainings){
             amounts.add(new Entry(i, ts.totalPushUps));
+            i++;
+        }
+        LineDataSet amountDataSet =  new LineDataSet(amounts, "Number Of Push Ups");
+        amountDataSet.setColor(Color.RED);
+        amountDataSet.setCircleColor(Color.RED);
+        ArrayList<ILineDataSet> amountDataSets = new ArrayList<>();
+        amountDataSets.add(amountDataSet);
+        LineData amountData = new LineData(amountDataSets);
+        amountLineChart.getDescription().setEnabled(false);
+        amountLineChart.getLegend().setEnabled(false);
+        amountLineChart.setData(amountData);
+        amountLineChart.invalidate();
+    }
+    public void setPowerPushUp(){
+        LineChart amountLineChart = (LineChart) findViewById(R.id.lineChartPower);
+        ArrayList<Entry> amounts = new ArrayList<>();
+        int i = 1;
+        for (TrainingSession ts: trainings){
+            amounts.add(new Entry((float) i, (float) ts.explosiveness));
+            i++;
+        }
+        LineDataSet amountDataSet =  new LineDataSet(amounts, "Number Of Push Ups");
+        amountDataSet.setColor(Color.RED);
+        amountDataSet.setCircleColor(Color.RED);
+        ArrayList<ILineDataSet> amountDataSets = new ArrayList<>();
+        amountDataSets.add(amountDataSet);
+        LineData amountData = new LineData(amountDataSets);
+        amountLineChart.getDescription().setEnabled(false);
+        amountLineChart.getLegend().setEnabled(false);
+        amountLineChart.setData(amountData);
+        amountLineChart.invalidate();
+    }
+    public void setPushTime(){
+        LineChart amountLineChart = (LineChart) findViewById(R.id.scatterChartPushTime);
+        ArrayList<Entry> amounts = new ArrayList<>();
+        int i = 1;
+        for (TrainingSession ts: trainings){
+            amounts.add(new Entry((float) i, (float) ts.avgPushUpTime));
+            i++;
+        }
+        LineDataSet amountDataSet =  new LineDataSet(amounts, "Number Of Push Ups");
+        amountDataSet.setColor(Color.RED);
+        amountDataSet.setCircleColor(Color.RED);
+        ArrayList<ILineDataSet> amountDataSets = new ArrayList<>();
+        amountDataSets.add(amountDataSet);
+        LineData amountData = new LineData(amountDataSets);
+        amountLineChart.getDescription().setEnabled(false);
+        amountLineChart.getLegend().setEnabled(false);
+        amountLineChart.setData(amountData);
+        amountLineChart.invalidate();
+    }
+    public void setSpeed(){
+        LineChart amountLineChart = (LineChart) findViewById(R.id.barChartPushSpeed);
+        ArrayList<Entry> amounts = new ArrayList<>();
+        int i = 1;
+        for (TrainingSession ts: trainings){
+            amounts.add(new Entry((float) i, (float) (ts.totalPushUps/ts.avgPushUpTime)));
             i++;
         }
         LineDataSet amountDataSet =  new LineDataSet(amounts, "Number Of Push Ups");
@@ -124,6 +199,7 @@ public class AdvancedStatistics extends AppCompatActivity {
             DatabaseReference dataBase = FirebaseDatabase.
                     getInstance("https://iot-project-e6e76-default-rtdb.europe-west1.firebasedatabase.app/").
                     getReference("training_sessions/" + uid);
+
             dataBase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
