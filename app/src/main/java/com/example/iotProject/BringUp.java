@@ -55,11 +55,11 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
 //    private final float[] checkPoints = {12, 17, 25, 30, 37, 42, 48, 56, 59, 64,
 //            72, 77, 83, 92, 95, 101, 106, 112, 118, 124, 130, 136, 142, 149,
 //            154, 160, 167, 174, 178, 184, 190, 196, 203, 207};
-    private final float[][] intervals = new float[][]{{14, 17}, {19, 22}, {25, 28}, {31, 34},
-            {37, 40}, {43, 46}, {50, 53}, {61, 64}, {67, 70}, {73, 76},
-        {79, 82}, {85, 88}, {97, 100}, {103, 106}, {109, 112}, {115, 118}, {121, 124}, {127, 130}, {133, 136},
-        {139, 142}, {145, 148}, {151, 154}, {157, 160}, {163, 166}, {169, 172}, {175, 178}, {181, 184},
-        {187, 190}, {193, 196}, {198, 201}
+    private final float[][] intervals = new float[][]{{14, 16}, {20, 22}, {26, 28}, {32, 34},
+            {38, 40}, {44, 46}, {50, 52}, {61, 63}, {67, 69}, {73, 75},
+        {79, 81}, {85, 87}, {97, 99}, {103, 105}, {109, 111}, {115, 117}, {121, 123}, {127, 129}, {133, 135},
+        {139, 141}, {145, 147}, {151, 153}, {157, 159}, {163, 165}, {169, 171}, {175, 177}, {181, 183},
+        {187, 189}, {193, 195}, {198, 200}
         };
     private int checkIndex = 0, state = 0;
     private final String startText = "0:00";
@@ -244,9 +244,9 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
             float GRAVITY = 9.81f;
             acc.add(Float.parseFloat(parts[i + 1]) - GRAVITY);
         }
+        updateImage();
         if (times.size() > 10 && checkIndex < intervals.length && intervals[checkIndex][1] <= lastTime){
-            boolean up = pyModule.callAttr("bsu_up", times.toArray(), acc.toArray(),
-                    intervals[checkIndex][0], intervals[checkIndex][1]).toBoolean();
+            boolean up = check_up(intervals[checkIndex][0] - 2, (intervals[checkIndex][1] + 0.5f));
             checkIndex++;
             if (!up) { // he is down
                 stopTraining(1);
@@ -257,7 +257,18 @@ public class BringUp extends AppCompatActivity implements ServiceConnection, Ser
         realTime = (int)(lastTime - 5);
         textTime = (realTime / 60) + ":" + (realTime % 60);
         progressTextView.setText(textTime);
-        updateImage();
+    }
+
+    private boolean check_up(float lower, float upper) {
+        ArrayList<Float> relevantTimes = new ArrayList<>();
+        ArrayList<Float> relevantAcc = new ArrayList<>();
+        for (int i = Math.max(0, times.size() - 1000); i < times.size(); i++) {
+            if (lower <= times.get(i) && times.get(i) <= upper) {
+                relevantTimes.add(times.get(i));
+                relevantAcc.add(acc.get(i));
+            }
+        }
+        return pyModule.callAttr("bsu_is_up", relevantTimes.toArray(), relevantAcc.toArray()).toBoolean();
     }
 
     private String[] clean_str(String msg){

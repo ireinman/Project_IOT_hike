@@ -71,3 +71,16 @@ def bsu_up(times,acc,starting_up,ending_up):
                 if ynew[peak] > ynew[bottom] + 1:
                     return True
     return False
+
+def bsu_is_up(times, acc):
+    tck = interpolate.splrep(times, acc, s=0)
+    xnew = np.arange(times[0], times[-1], 0.2)
+    ynew = interpolate.splev(xnew, tck, der=0)
+    peaks = signal.find_peaks(ynew)[0]
+    bottoms = signal.find_peaks(-ynew)[0]
+    for peak in peaks:
+        for bottom in bottoms:
+            if peak < bottom:
+                if ynew[peak] > ynew[bottom] + 1:
+                    return True
+    return False

@@ -10,7 +10,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class HomeScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO - check parameters and warnings in all the project and delete comments of code
+        // TODO - check parameters and warnings in all the project and delete comments of code, logs
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
